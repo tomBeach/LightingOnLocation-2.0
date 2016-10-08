@@ -1,0 +1,368 @@
+/* ======= positions ======= */
+#banner   { position: absolute; left:10px; top:10px; width:120px; height:100px; }
+#main_nav  { position: absolute; left:140px; top:30px; width:520px; height:80px; }
+#hover_box  { position: absolute; left:140px; top:140px; width:130px; height:60px; }
+#panel_nav  { position: absolute; left:280px; top:140px; width:380px; height:60px; }
+#lesson_header  { position: absolute; left:140px; top:200px; width:520px; height:40px; }
+#lesson_box  { position: absolute; left:140px; top:240px; width:520px; height:460px; }
+#canvas_studio  { position: absolute; left:10px; top:210px; width:720px; height:405px; }
+#canvas_monitor  { position: absolute; left:700px; top:30px; width:384px; height:216px; }
+#tooltips { position: absolute; left:990px; top:220px; width:280px; height:80px; }
+/*#title_text { z-index:4; position: absolute; left:990px; top:50px; width:280px; }*/
+
+/* ======= hover_text_box ======= */
+#hover_text_box {
+    position: absolute;
+    display: inline-block;
+    text-align: right;
+    background-color: #eee;
+    border: solid 2px gray;
+}
+
+/* ======= nav links ======= */
+a, a.visited, a:link {
+	float: left;
+	width: 100%;
+	height: 100%;
+    margin: 0;
+    padding: 2px;
+	font-weight: bold;
+	text-align: center;
+	text-decoration: none;
+	color: white;
+	background-color: #888;
+}
+/*a:hover, a:active, a.thisPage {
+	color: #29088A;
+	background-color: #FAAC58;
+}*/
+
+/* ======= main_nav ======= */
+#main_nav {
+	display: inline-block;
+}
+#prevNav, #thisNav, #nextNav {
+	display: block;
+	height: 24px;
+    margin: 0;
+    padding: 0;
+}
+#prevNav {
+	background-color: gray;
+}
+#thisNav {
+	background-color: purple;
+}
+#nextNav {
+	background-color: #F5D0A9;
+}
+#main_nav ul {
+    margin: 0;
+    padding: 0;
+	list-style: none;
+}
+#main_nav li {
+	display: block;
+	float: left;
+	height: 24px;
+    margin: 1px;
+    padding: 0;
+}
+
+/* ======= panel_nav ======= */
+#panel_nav {
+    display: inline-block;
+    background-color: lavender;
+    border: solid 2px gray;
+}
+#panel_nav ul {
+    width: 100%;
+	height: 100%;
+    margin: 0;
+    padding: 7px;
+}
+#panel_nav li {
+	display: block;
+	float: left;
+	margin-left: 5px;
+    width: 30%;
+	height: 100%;
+}
+#textLink {
+	display: inline-block;
+    /*width: 50%;*/
+    border: 1px solid gray;
+	background-color: lavender;
+}
+#prevLink {
+	display: inline-block;
+    /*width: 25%;*/
+	border: 1px solid gray;
+	background-color: #F7BE81;
+}
+#nextLink {
+	display: inline-block;
+    /*width: 25%;*/
+    border: 1px solid gray;
+	background-color: #58FA58;
+}
+.panelLink a {
+	color: black;
+ 	line-height: 32px;
+}
+.panelLink a:hover {
+	color: #FFFFFF;
+}
+.panelLink a:active {
+	color: #FFFFFF;
+}
+
+/* ======= canvases ======= */
+canvas {
+    background-color: gray;
+    border: solid 2px red;
+}
+#canvas_monitor {
+    box-shadow: 8px 8px 8px rgba(60, 10, 20, 0.7);
+}
+
+/* ======= instruction text ======= */
+#lesson_header {
+    background-color: lavender;
+    border: solid 2px black;
+    z-index: 3;
+}
+#lesson_header, .hidden {
+    opacity: 0;
+}
+#lesson_title, #lesson_subtitle {
+    margin: 0 0 0 20px;
+    padding: 0;
+    text-align: left;
+}
+#lesson_title {
+    line-height: 20px;
+	font-weight: bold;
+    color: purple;
+}
+#lesson_subtitle {
+    line-height: 16px;
+	font-weight: normal;
+    color: red;
+}
+#lesson_box {
+    display: none;
+    max-height: 200px;
+    background-color: lavender;
+    border: solid 2px black;
+    z-index: 3;
+}
+.lesson_box .expanded {
+    max-height: 200px;
+}
+
+
+
+
+/* ======= text ======= */
+#titleText {
+	color: #3104B4;
+  	line-height: 30px;
+	font-weight: bold;
+   	font-size: xx-large;
+  	font-weight: 700;
+	text-align: center;
+	text-shadow: 1px 1px 1px #fff;
+}
+
+#tooltips {
+	color: red;
+  	line-height: 30px;
+   	font-size: xx-large;
+ 	font-weight: 700;
+	text-align: center;
+	text-shadow: 1px 1px white;
+}
+
+#instrText {
+	color: white;
+   	font-size: medium;
+ 	font-weight: 100;
+	text-align: left;
+}
+
+#occupier {
+	position:absolute;
+	display: block;
+	color: red;
+   	font-size: large;
+ 	font-weight: 700;
+	text-align: right;
+	z-index: 5;
+}
+
+/* ======= targets ======= */
+
+.target {
+	z-index:0;
+	display: block;
+	border: 5px solid #ddd;
+	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+.target.over {
+	border: 5px solid #e00;
+	box-shadow: 5px 5px 5px rgba(255, 255, 255, 1);
+}
+
+.target.occupied {
+	background-color: rgba(255, 0, 0, 0.2);
+}
+
+
+/* ======= trackpad ======= */
+
+.trackpad {
+	z-index: 2;
+    position: absolute;
+	border: 5px solid rgba(255, 130, 0, 1);
+	background-color: #404040;
+	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* ======= tracker ======= */
+
+.tracker {
+	z-index: 3;
+	border: 1px solid #404040;
+    background-color: #c0c0c0;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+.tracker.over {
+	border: 0px solid white;
+    background-color: red;
+}
+
+/* ======= items ======= */
+
+.button, .toggle, .settingH, .sliderH, .dragger {
+	z-index: 2;
+	display: block;
+	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+.button.over, .toggle.over, .settingH.over, .sliderH.over, .dragger.over {
+	box-shadow: 5px 5px 5px rgba(255, 255, 255, 1);
+}
+
+.button.selected, .toggle.selected, .settingH.selected, .sliderH.selected, .dragger.selected {
+	margin-left: 2px;
+	margin-top: 2px;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 1);
+}
+
+
+
+
+/* ======= ======= ======= ARCHIVE ======= ======= =======
+/* ======= ======= ======= ARCHIVE ======= ======= =======
+/* ======= ======= ======= ARCHIVE ======= ======= =======
+
+img.bg {
+	/* Set rules to fill background
+	min-height: 100%;
+	min-width: 1024px;
+
+	/* Set up proportionate scaling
+	width: 100%;
+	height: auto;
+
+	/* Set up positioning
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+*/
+
+/*canvas {
+	z-index: 0;
+    border: 1px solid #fff;
+    background-color: #444;
+    box-shadow: 5px 5px 10px #222;
+}
+
+#cf {
+	position:relative;
+	background-size: 100% auto;
+}
+
+#cf img {
+	position:absolute;
+	left:0;
+	-webkit-transition: opacity 1s ease-in-out;
+	-moz-transition: opacity 1s ease-in-out;
+	-o-transition: opacity 1s ease-in-out;
+	transition: opacity 1s ease-in-out;
+}
+
+#cf img.transparent {
+	opacity:0;
+}*/
+
+
+.fullHeight {
+    animation: fullH 1s;
+    animation-fill-mode: forwards;
+}
+@keyframes fullH {
+    0% { max-height: 0; }
+    100% { max-height: 200px; }
+}
+
+#lesson_box .fullHeight {
+    max-height: 200px;
+    -webkit-transition: max-height 0.8s;
+	-moz-transition: max-height 0.8s;
+	transition: max-height 0.8s;
+    animation: fullH 1s;
+    animation-direction: normal;
+}
+@keyframes fullH {
+    0% { max-height: 0; }
+    100% { max-height: 300px; }
+}
+
+
+#lesson_box {
+    width: 300px;
+    height: 300px;
+    /*-webkit-transition: width 2s ease, height 2s ease;
+    -moz-transition: width 2s ease, height 2s ease;
+    -o-transition: width 2s ease, height 2s ease;*/
+    /*transition: width 2s ease, height 2s ease;*/
+    transition: max-height 500ms linear;
+
+    /*max-height: 0;
+    transition: max-height 0.15s ease-out;
+    overflow: hidden;
+    background: #d5d5d5;
+    border: solid 2px black;
+    z-index: 3;*/
+}
+.box-height {
+    width: 400px;
+    height: 400px;
+}
+/*#lesson_box {
+    max-height: 0;
+	overflow: hidden;
+    color: blue:
+}*/
+/*.fullHeight {
+    max-height: 500px;
+    transition: max-height 0.25s ease-in;
+}*/

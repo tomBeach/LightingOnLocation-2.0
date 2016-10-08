@@ -1,0 +1,16 @@
+.show {
+    animation: fadeIn 0.2s;
+    animation-fill-mode: forwards;
+}
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 100; }
+}
+.hide {
+    animation: fadeOut 0.2s;
+    animation-direction: normal;
+}
+@keyframes fadeOut {
+    0% { opacity: 100; }
+    100% { opacity: 0; }
+}

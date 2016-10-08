@@ -1,0 +1,187 @@
+
+/* ======= general ======= */
+body {
+	/*font-family: "Gill Sans", Helvetica, Arial, sans-serif;*/
+    font-family: 'Signika', sans-serif;
+}
+* {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+html {
+    height: 100%;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-repeat:no-repeat;
+    background: -webkit-linear-gradient( to top, #777, #ccc);
+    background: -moz-linear-gradient( to top, #777, #ccc);
+    background: -ms-linear-gradient( to top, #777, #ccc);
+    background: -o-linear-gradient( to top, #777, #ccc);
+    background: linear-gradient( to top, #777, #ccc);
+}
+
+/* ======= grid_image ======= */
+.grid_item {
+    width: 86px;
+    height: 110px;
+    margin: 10px 0 0 10px;
+    text-align: center;
+    background-color: #aaa;
+}
+.grid_image {
+    width: 86px;
+    height: auto;
+}
+.grid_text {
+    margin-top: 2px;
+    font-size: 1em;
+    font-weight: 400;
+    color: orange;
+}
+
+/* ======= hover text ======= */
+#hover_box {
+    position: absolute;
+    left: 10px;
+    top: 242px;
+    width: 550px;
+    height: 35px;
+    padding: 10px 10px 0 10px;
+    background-color: #aaa;
+    text-align: right;
+    z-index: 2;
+}
+.hover_text {
+    font-size: 1.4em;
+    font-weight: 400;
+    color: #666699;
+}
+
+/* ======= info ======= */
+#monitor_box {
+    position: absolute;
+    left: 855px;
+    top: 95px;
+    width: 160px;
+    height: 35px;
+    padding: 0;
+    text-align: center;
+    z-index: 2;
+}
+.tab_box {
+    width: 160px;
+    height: 40px;
+    text-align: center;
+    border: solid 2px #666699;
+}
+#shop_tab {
+    position: absolute;
+    left: 740px;
+    top: 242px;
+    background-color: #aaa;
+    border-bottom: solid 2px #aaa;
+    z-index: 2;
+}
+#studio_tab {
+    position: absolute;
+    left: 570px;
+    top: 242px;
+    background-color: gray;
+    border-bottom: solid 2px gray;
+    z-index: 2;
+}
+#lesson_menu {
+    position: absolute;
+    left: 964px;
+    top: 242px;
+    width: 160px;
+    text-align: center;
+    background-color: #aaa;
+    z-index: 2;
+}
+.label_text_active {
+    display: block;
+    text-decoration: none;
+    font-size: 1.8em;
+    font-weight: 700;
+    text-shadow: 2px 2px #555;
+    color: #ffbf80;
+}
+.active {
+    display: block;
+    height: 40px;
+    border: solid 2px #666699;
+    border-bottom: solid 2px #aaa;
+}
+.label_text_inactive {
+    display: block;
+    padding: 5px 0;
+    text-decoration: none;
+    font-size: 1.4em;
+    font-weight: 400;
+    color: #ffbf80;
+}
+.inactive {
+    display: block;
+    height: 35px;
+    border-bottom: solid 2px #aaa;
+}
+.label_text_active:hover, .label_text_inactive:hover {
+    background-color: #666699;
+}
+
+
+
+/* ======= display areas ======= */
+.display {
+    background-color: white;
+    border-top: solid 2px #666699;
+    border-left: solid 2px #666699;
+    z-index: 1;
+}
+#shop_display {
+    position: absolute;
+    left: 740px;
+    top: 280px;
+    width: 384px;
+    height: 405px;
+}
+#shop_display {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-repeat:no-repeat;
+    background: -webkit-linear-gradient( to top, #777, #aaa);
+    background: -moz-linear-gradient( to top, #777, #aaa);
+    background: -ms-linear-gradient( to top, #777, #aaa);
+    background: -o-linear-gradient( to top, #777, #aaa);
+    background: linear-gradient( to top, #777, #aaa);
+}
+
+/* ======= canvases ======= */
+canvas {
+    background-color: gray;
+    border: solid 2px #666699;
+    z-index: 1;
+}
+#canvas_monitor {
+    box-shadow: 8px 8px 8px rgba(60, 10, 20, 0.7);
+}
+#canvas_studio  {
+    position: absolute;
+    left: 10px;
+    top: 280px;
+    width: 720px;
+    height: 405px;
+}
+#canvas_monitor  {
+    position: absolute;
+    left: 740px;
+    top: 10px;
+    width: 384px;
+    height: 216px;
+}
