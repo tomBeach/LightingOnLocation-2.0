@@ -69,13 +69,6 @@ html {
     height: 35px;
     padding: 0;
     text-align: center;
-    z-index: 2;
-}
-.tab_box {
-    width: 160px;
-    height: 40px;
-    text-align: center;
-    border: solid 2px #666699;
 }
 #shop_tab {
     position: absolute;
@@ -83,7 +76,6 @@ html {
     top: 242px;
     background-color: #aaa;
     border-bottom: solid 2px #aaa;
-    z-index: 2;
 }
 #studio_tab {
     position: absolute;
@@ -91,7 +83,6 @@ html {
     top: 242px;
     background-color: gray;
     border-bottom: solid 2px gray;
-    z-index: 2;
 }
 #lesson_menu {
     position: absolute;
@@ -100,40 +91,51 @@ html {
     width: 160px;
     text-align: center;
     background-color: #aaa;
-    z-index: 2;
 }
-.label_text_active {
+.label_text_selected {
     display: block;
+    height: 100%;
     text-decoration: none;
     font-size: 1.8em;
     font-weight: 700;
     text-shadow: 2px 2px #555;
     color: #ffbf80;
+    z-index: 2;
 }
-.active {
+.label_text_active {
     display: block;
-    height: 40px;
-    border: solid 2px #666699;
-    border-bottom: solid 2px #aaa;
-}
-.label_text_inactive {
-    display: block;
+    height: 100%;
     padding: 5px 0;
     text-decoration: none;
     font-size: 1.4em;
     font-weight: 400;
     color: #ffbf80;
+    z-index: 1;
 }
-.inactive {
+.tab_box_selected {
+    width: 160px;
+    height: 40px;
+    text-align: center;
+    border: solid 2px #666699;
+    border-bottom: solid 2px #aaa;
+    z-index: 2;
+}
+.tab_box_active {
+    width: 160px;
+    height: 35px;
+    text-align: center;
+    border: solid 2px #666699;
+    border-bottom: solid 2px #aaa;
+    z-index: 1;
+}
+/*.inactive {
     display: block;
     height: 35px;
     border-bottom: solid 2px #aaa;
-}
-.label_text_active:hover, .label_text_inactive:hover {
+}*/
+.label_text_selected:hover, .label_text_active:hover {
     background-color: #666699;
 }
-
-
 
 /* ======= display areas ======= */
 .display {
@@ -142,14 +144,15 @@ html {
     border-left: solid 2px #666699;
     z-index: 1;
 }
-#shop_display {
+#shopLesson_display {
     position: absolute;
     left: 740px;
     top: 280px;
     width: 384px;
     height: 405px;
+    overflow-y: scroll;
 }
-#shop_display {
+#shopLesson_display {
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -160,6 +163,59 @@ html {
     background: -ms-linear-gradient( to top, #777, #aaa);
     background: -o-linear-gradient( to top, #777, #aaa);
     background: linear-gradient( to top, #777, #aaa);
+}
+
+/* ======= menus ======= */
+#lessonMenu {
+    display: block;
+    margin: 0;
+    padding: 5px 10px;
+    text-decoration: none;
+    list-style-type: none;}
+#lessonMenu > li {
+    display: block;
+}
+.lessonItem {
+    display: block;
+    height: 70px;
+    padding: 10px 10px;
+    background-color: #aaa;
+    border-bottom: solid 1px gray;
+}
+.lessonItem:hover {
+    display: block;
+    background-color: lightsteelblue;
+}
+.lessonItem:hover > .menu_title_active {
+    color: #666699;
+}
+.lessonItem:hover > .menu_text_active {
+    color: purple;
+}
+.menu_title_active {
+    margin: 0;
+    padding: 0;
+    font-size: 1.1em;
+    font-weight: 400;
+    color: purple;
+}
+.menu_text_active {
+    margin: 5px 10px;
+    padding: 0;
+    font-size: 1.0em;
+    font-weight: 200;
+    color: yellow;
+}
+
+/* ======= lessons ======= */
+.lessonText > p {
+	margin: 10px;
+	line-height: 30px;
+	color: #222;
+}
+.lessonText {
+	height: 0;
+	opacity: 0;
 }
 
 /* ======= canvases ======= */
