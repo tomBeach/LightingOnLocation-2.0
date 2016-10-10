@@ -70,6 +70,22 @@ html {
     padding: 0;
     text-align: center;
 }
+.tab_box_selected {
+    width: 190px;
+    height: 40px;
+    text-align: center;
+    border: solid 2px #666699;
+    border-bottom: solid 2px #aaa;
+    z-index: 2;
+}
+.tab_box_active {
+    width: 190px;
+    height: 35px;
+    text-align: center;
+    border: solid 2px #666699;
+    border-bottom: solid 2px #aaa;
+    z-index: 1;
+}
 #shop_tab {
     position: absolute;
     left: 740px;
@@ -79,16 +95,15 @@ html {
 }
 #studio_tab {
     position: absolute;
-    left: 570px;
+    left: 540px;
     top: 242px;
     background-color: gray;
     border-bottom: solid 2px gray;
 }
 #lesson_menu {
     position: absolute;
-    left: 964px;
+    left: 934px;
     top: 242px;
-    width: 160px;
     text-align: center;
     background-color: #aaa;
 }
@@ -110,22 +125,6 @@ html {
     font-size: 1.4em;
     font-weight: 400;
     color: #ffbf80;
-    z-index: 1;
-}
-.tab_box_selected {
-    width: 160px;
-    height: 40px;
-    text-align: center;
-    border: solid 2px #666699;
-    border-bottom: solid 2px #aaa;
-    z-index: 2;
-}
-.tab_box_active {
-    width: 160px;
-    height: 35px;
-    text-align: center;
-    border: solid 2px #666699;
-    border-bottom: solid 2px #aaa;
     z-index: 1;
 }
 /*.inactive {

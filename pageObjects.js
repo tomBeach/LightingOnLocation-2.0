@@ -26,7 +26,7 @@ function initPages(Setup_Data, Group_Data, Menu_Data, Actor_Data, Target_Data) {
 }
 
 function Page (pageKey, pageText, SetupItems, GroupItems, MenuItems, ActorItems, TargetItems, studioCanvas, monitorCanvas) {
-    console.log(' Page');
+    // console.log(' Page');
     this.pageKey = pageKey;
     this.pageText = pageText;
     this.SetupItems = SetupItems;

@@ -27,7 +27,7 @@ function initLessons(Page_Data) {
 }
 
 function Lesson (lessonTitle, lessonSubtitle, lessonPages) {
-    console.log(' Lesson');
+    // console.log(' Lesson');
     this.lessonTitle = lessonTitle;
     this.lessonSubtitle = lessonSubtitle;
     this.lessonPages = lessonPages;

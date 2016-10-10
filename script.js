@@ -62,9 +62,7 @@ var clientApp = {
         this.pages = initPages(Setup_Data, Group_Data, Menu_Data, Actor_Data, Target_Data);
         this.lessons = initLessons(this.pages);
         this.activePage = this.pages.page_0_01;
-        console.log('this.activePage:', this.activePage);
         this.activateDisplayItems();
-        console.log('this.pages:', this.pages);
     },
 
     // ======= makeLessonPage =======
@@ -95,17 +93,48 @@ var clientApp = {
 
         function makeLessonCanvases() {
             console.log('makeLessonCanvases');
-            var studioImage = clientApp.activePage.studioCanvas.image + "_" + clientApp.activePage.studioCanvas.initFrame + ".png";
-            console.log('studioImage:', studioImage);
 
-            var canvas_studio = document.getElementById("canvas_studio");
-            var context_studio = canvas_studio.getContext("2d");
-            context_studio.drawImage(studioImage, 0, 0, 720, 405, 0, 0, clientApp.displayItems.studio.W, clientApp.displayItems.studio.H);
+            function backingScale(context) {
+                if ('devicePixelRatio' in window) {
+                    if (window.devicePixelRatio > 1) {
+                        return window.devicePixelRatio;
+                    }
+                }
+                return 1;
+            }
 
+            var imageName = clientApp.activePage.studioCanvas.image;
+            var imageString = ('images/' + imageName + '_' + "0" + '.png');
+            var studioImage = new Image();
+            studioImage.id = imageName + '_' + "0";
+            studioImage.src = imageString;
+            console.log("studioImage:", studioImage);
 
+            studioImage.onload = function() {
+                var can = document.getElementById("canvas_studio");
+                var ctx = can.getContext("2d");
+                var width = can.offsetWidth;
+                var height = can.offsetHeight;
+                var scaleFactor = backingScale(ctx);
 
+                if (scaleFactor > 1) {
+                    var canW = width / scaleFactor;
+                    var canH = height / scaleFactor;
+                    var ctx = can.getContext('2d');
+                } else {
+                    var canW = width;
+                    var canH = height;
+                }
+                console.log("can:", can);
+                console.log("ctx:", ctx);
+                console.log("canW:", canW);
+                console.log("canH:", canH);
+
+                ctx.clearRect(0, 0, 720, 405);
+                ctx.drawImage(studioImage, 0, 0, 720, 405, 0, 0, canW, canH);
+                ctx.save();
+            }
         }
-
     },
 
     // ======= makeMenuItem =======
