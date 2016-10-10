@@ -223,17 +223,17 @@ canvas {
     border: solid 2px #666699;
     z-index: 1;
 }
-#canvas_monitor {
+#monitorCanvas {
     box-shadow: 8px 8px 8px rgba(60, 10, 20, 0.7);
 }
-#canvas_studio  {
+#studioCanvas  {
     position: absolute;
     left: 10px;
     top: 280px;
     width: 720px;
     height: 405px;
 }
-#canvas_monitor  {
+#monitorCanvas  {
     position: absolute;
     left: 740px;
     top: 10px;

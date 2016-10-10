@@ -5,8 +5,8 @@
 #panel_nav  { position: absolute; left:280px; top:140px; width:380px; height:60px; }
 #lesson_header  { position: absolute; left:140px; top:200px; width:520px; height:40px; }
 #lesson_box  { position: absolute; left:140px; top:240px; width:520px; height:460px; }
-#canvas_studio  { position: absolute; left:10px; top:210px; width:720px; height:405px; }
-#canvas_monitor  { position: absolute; left:700px; top:30px; width:384px; height:216px; }
+#studioCanvas  { position: absolute; left:10px; top:210px; width:720px; height:405px; }
+#monitorCanvas  { position: absolute; left:700px; top:30px; width:384px; height:216px; }
 #tooltips { position: absolute; left:990px; top:220px; width:280px; height:80px; }
 /*#title_text { z-index:4; position: absolute; left:990px; top:50px; width:280px; }*/
 
@@ -122,7 +122,7 @@ canvas {
     background-color: gray;
     border: solid 2px red;
 }
-#canvas_monitor {
+#monitorCanvas {
     box-shadow: 8px 8px 8px rgba(60, 10, 20, 0.7);
 }
 

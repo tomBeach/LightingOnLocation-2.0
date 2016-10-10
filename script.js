@@ -53,47 +53,98 @@ var Target_Data = null;
 var clientApp = {
     pages: null,
     lessons: null,
-    displayItems: displayItems,
     activePage: null,
+    displayItems: displayItems,
+    monitorImages: [],
+    studioImages: [],
 
     // ======= initialize =======
     initialize: function() {
-        console.log('initialize');
+        console.log("initialize");
         this.pages = initPages(Setup_Data, Group_Data, Menu_Data, Actor_Data, Target_Data);
         this.lessons = initLessons(this.pages);
         this.activePage = this.pages.page_0_01;
         this.activateDisplayItems();
     },
 
-    // ======= makeLessonPage =======
-    makeLessonPage: function(lesson) {
-        console.log('makeLessonPage');
-        console.log('lesson:', lesson);
+    // ======= makeLessonCanvases =======
+    makeLessonCanvases: function(lesson) {
+        console.log("makeLessonCanvases");
 
-        makeLessonText();
-        makeLessonCanvases();
+        loadCanvasImages("studioCanvas");
+        loadCanvasImages("monitorCanvas");
 
-        function makeLessonText() {
-            console.log('makeLessonText');
-            var lessonText = clientApp.activePage.pageText;
-            var lessonId = $(lesson).attr('id');
-            var lessonHtml = $(lesson).parents().eq(0).html();
-            var lessonBox = $('#' + lessonId).parents().eq(2);
-            $('#' + lessonId).parents().eq(1).remove();
-            $(lessonBox).append(lessonHtml);
-            var lessonTextHtml = "<div class='lessonText hide'><p>" + lessonText + "</p></div>";
-            $(lessonBox).append(lessonTextHtml);
-            $( ".lessonText" ).animate({
-                height: "300px",
-                opacity: 1.0
-            }, 2000, function() {
-                console.log('done');
-            });
-        }
+        // ======= loadCanvasImages =======
+        function loadCanvasImages(canvas) {
+            console.log("loadCanvasImages");
 
-        function makeLessonCanvases() {
-            console.log('makeLessonCanvases');
+            var imageFilesArray = [];
+            var imageName = clientApp.activePage[canvas].image;
+            var startFrame = clientApp.activePage[canvas].startFrame;
+            var endFrame = clientApp.activePage[canvas].endFrame + 1;
+            var initFrame = clientApp.activePage[canvas].initFrame;
+            console.log("initFrame:", initFrame);
 
+            for (var i = startFrame; i < endFrame; i++) {
+                var imageFileName = (imageName + '_' + i + '.png');
+                imageFilesArray.push(imageFileName);
+            }
+
+            var can = document.getElementById(canvas);
+            var ctx = can.getContext("2d");
+            var width = can.offsetWidth;
+            var height = can.offsetHeight;
+            var scaleFactor = backingScale(ctx);
+            console.log("width:", width);
+            console.log("height:", height);
+
+            if (scaleFactor > 1) {
+                var canW = width / scaleFactor;
+                var canH = height / scaleFactor;
+                var ctx = can.getContext('2d');
+            } else {
+                var canW = width;
+                var canH = height;
+            }
+            console.log("can:", can);
+            console.log("ctx:", ctx);
+            console.log("canW:", canW);
+            console.log("canH:", canH);
+
+            loadNextImage(null, 0);
+            function loadNextImage(image, imageIndex) {
+                console.log("loadNextImage");
+                console.log("imageIndex/imageName:", imageIndex, imageName);
+                var imageString = "images/" + imageFilesArray[imageIndex];
+                if (imageIndex < imageFilesArray.length) {
+                    var canvasImage = new Image();
+                    canvasImage.id = imageName + "_" + imageIndex;
+                    canvasImage.src = imageString;
+                    canvasImage.onload = function() {
+                        setTimeout(function(){
+                            if (canvas == "studioCanvas") {
+                                clientApp.studioImages.push(canvasImage);
+                            } else {
+                                clientApp.monitorImages.push(canvasImage);
+                            }
+                            loadNextImage(imageFilesArray[imageIndex++], imageIndex);
+                        }, 50);
+                    }
+                } else {
+                    console.log("clientApp.studioImages[initFrame]:", clientApp.studioImages[initFrame]);
+                    console.log("clientApp.monitorImages[initFrame]:", clientApp.monitorImages[initFrame]);
+
+                    if (canvas == "studioCanvas") {
+                        var initImage = clientApp.studioImages[initFrame];
+                    } else {
+                        var initImage = clientApp.monitorImages[initFrame];
+                    }
+                    console.log("initImage:", initImage);
+                    ctx.clearRect(0, 0, 720, 405);
+                    ctx.drawImage(initImage, 0, 0, 720, 405, 0, 0, 280, 140);
+                    ctx.save();
+                }
+            }
             function backingScale(context) {
                 if ('devicePixelRatio' in window) {
                     if (window.devicePixelRatio > 1) {
@@ -102,44 +153,41 @@ var clientApp = {
                 }
                 return 1;
             }
-
-            var imageName = clientApp.activePage.studioCanvas.image;
-            var imageString = ('images/' + imageName + '_' + "0" + '.png');
-            var studioImage = new Image();
-            studioImage.id = imageName + '_' + "0";
-            studioImage.src = imageString;
-            console.log("studioImage:", studioImage);
-
-            studioImage.onload = function() {
-                var can = document.getElementById("canvas_studio");
-                var ctx = can.getContext("2d");
-                var width = can.offsetWidth;
-                var height = can.offsetHeight;
-                var scaleFactor = backingScale(ctx);
-
-                if (scaleFactor > 1) {
-                    var canW = width / scaleFactor;
-                    var canH = height / scaleFactor;
-                    var ctx = can.getContext('2d');
-                } else {
-                    var canW = width;
-                    var canH = height;
-                }
-                console.log("can:", can);
-                console.log("ctx:", ctx);
-                console.log("canW:", canW);
-                console.log("canH:", canH);
-
-                ctx.clearRect(0, 0, 720, 405);
-                ctx.drawImage(studioImage, 0, 0, 720, 405, 0, 0, canW, canH);
-                ctx.save();
-            }
         }
+    },
+
+    // ======= makeLessonText =======
+    makeLessonText: function(lesson) {
+        console.log("makeLessonText");
+        var lessonText = clientApp.activePage.pageText;
+        var lessonId = $(lesson).attr('id');
+        var lessonHtml = $(lesson).parents().eq(0).html();
+        var lessonBox = $('#' + lessonId).parents().eq(2);
+        $('#' + lessonId).parents().eq(1).remove();
+        $(lessonBox).append(lessonHtml);
+        var lessonTextHtml = "<div class='lessonText hide'><p>" + lessonText + "</p></div>";
+        $(lessonBox).append(lessonTextHtml);
+        $( ".lessonText" ).animate({
+            height: "300px",
+            opacity: 1.0
+        }, 2000, function() {
+            console.log("done");
+        });
+    },
+
+    // ======= makeLessonPage =======
+    makeLessonPage: function(lesson) {
+        console.log("makeLessonPage");
+        console.log("lesson:", lesson);
+
+        this.makeLessonText();
+        this.makeLessonCanvases();
+
     },
 
     // ======= makeMenuItem =======
     makeMenuItem: function(key, lesson, menuType) {
-        console.log('makeMenuItem');
+        console.log("makeMenuItem");
         var itemHtml = ""
         switch(menuType) {
             case "lesson":
@@ -154,13 +202,13 @@ var clientApp = {
 
     // ======= removeGridItems =======
     removeGridItems: function(menu) {
-        console.log('removeGridItems');
+        console.log("removeGridItems");
         var gridItems = $('.grid_item').remove();
     },
 
     // ======= makeLessonMenu =======
     makeLessonMenu: function(menu) {
-        console.log('makeLessonMenu');
+        console.log("makeLessonMenu");
         var menuHtml = "<ul id='lessonMenu'>";
         $.each(this.lessons, function(key, lesson) {
             menuHtml += clientApp.makeMenuItem(key, lesson, "lesson");
@@ -170,7 +218,7 @@ var clientApp = {
 
     // ======= selectDisplayItem =======
     selectDisplayItem: function(item) {
-        console.log('selectDisplayItem');
+        console.log("selectDisplayItem");
         var itemId = $(item).attr('id');
 
         switch (itemId) {
@@ -189,9 +237,9 @@ var clientApp = {
 
         // == modify tab css between selected and active states
         function selectItem(itemId) {
-            console.log('selectItem');
+            console.log("selectItem");
             var itemParentId = $('#' + itemId).parent('div').attr('id');
-            console.log('itemParentId:', itemParentId);
+            console.log("itemParentId:", itemParentId);
             $('#' + itemParentId).removeClass('tab_box_active');
             $('#' + itemParentId).addClass('tab_box_selected');
             $('#' + itemId).removeClass('label_text_active');
@@ -199,7 +247,7 @@ var clientApp = {
         }
 
         function deselectItem(itemId) {
-            console.log('deselectItem');
+            console.log("deselectItem");
             var itemParentId = $('#' + itemId).parent('div').attr('id');
             $('#' + itemParentId).removeClass('tab_box_selected');
             $('#' + itemParentId).addClass('tab_box_active');
@@ -210,8 +258,8 @@ var clientApp = {
 
     // ======= activateMenuItems =======
     activateMenuItems: function(menu) {
-        console.log('activateMenuItems');
-        console.log('menu:', menu);
+        console.log("activateMenuItems");
+        console.log("menu:", menu);
 
         switch(menu) {
             case "lessonMenu":
@@ -220,8 +268,8 @@ var clientApp = {
             $('#lessonMenu').children('li').children('div').on('click', function(e) {
                 console.log("\n-- click");
                 clientApp.displayItems.activeLesson = e.currentTarget;
-                console.log('e.currentTarget:', e.currentTarget);
-                console.log('e.currentTarget.id:', e.currentTarget.id);
+                console.log("e.currentTarget:", e.currentTarget);
+                console.log("e.currentTarget.id:", e.currentTarget.id);
                 clientApp.makeLessonPage(e.currentTarget);
                 e.stopPropagation();
             });
@@ -245,7 +293,7 @@ var clientApp = {
 
     // ======= activateDisplayItems =======
     activateDisplayItems: function() {
-        console.log('activateDisplayItems');
+        console.log("activateDisplayItems");
 
         // == studio, shop, lesson select (CLICK)
         $(".label_text_selected, .label_text_active").on('click', function(e) {
@@ -270,7 +318,7 @@ var clientApp = {
 
     // ======= toggleHoverText =======
     toggleHoverText: function(item, itemType) {
-        // console.log('toggleHoverText');
+        // console.log("toggleHoverText');
         if ($(item).attr('id')) {
             if (itemType == "display") {
                 var itemText = clientApp.displayItems[$(item).attr('id')].itemText;
