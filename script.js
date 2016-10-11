@@ -3,34 +3,11 @@
 // ======= ======= ======= ======= ======= objects ======= ======= ======= ======= =======
 // ======= ======= ======= ======= ======= objects ======= ======= ======= ======= =======
 
-
-// // ======= ======= ======= nextGameScreen ======= ======= =======
-
-// function Dragger(actorName, actorType, actorImage, initLoc, dropLoc) {
-//     this.actorName = actorName;
-//     this.actorType = actorType;
-//     this.actorImage = actorImage;
-//     this.initLoc = initLoc;
-//     this.dropLoc = dropLoc;
-// }
-//
-// var drag_0_01 = new Dragger(
-//     /*actorName*/ "distance_650",
-//     /*actorType*/ "dragger",
-//     /*actorImage*/ "f650_0",
-//     /*initLoc*/ { X:100, Y:100, W:100, H:100 },
-//     /*dropLoc*/ { X:200, Y:200, W:100, H:100 }
-// );
-//
-// // ======= activateDrag =======
-// Dragger.prototype.activateDrag = function() {
-//     console.log("activateDrag");
-// }
-//
-// // ======= initDrag =======
-// Dragger.prototype.initDrag = function() {
-//     console.log("initDrag");
-// }
+// var Actor_Data = initActors(this.pages);
+// var Setup_Data = {};
+// var Group_Data = {};
+// var Menu_Data = {};
+// var Target_Data = {};
 
 var displayItems = {
     monitor: { itemName: "monitor", itemText: "Monitor" },
@@ -39,12 +16,6 @@ var displayItems = {
     lessons: { itemName: "lessons", itemText: "Lesson Menu" },
     activeLesson: null
 }
-
-var Setup_Data = null;
-var Group_Data = null;
-var Menu_Data = null;
-var Actor_Data = null;
-var Target_Data = null;
 
 // ======= ======= ======= ======= ======= initialize ======= ======= ======= ======= =======
 // ======= ======= ======= ======= ======= initialize ======= ======= ======= ======= =======
@@ -61,10 +32,91 @@ var clientApp = {
     // ======= initialize =======
     initialize: function() {
         console.log("initialize");
-        this.pages = initPages(Setup_Data, Group_Data, Menu_Data, Actor_Data, Target_Data);
-        this.lessons = initLessons(this.pages);
+        this.lessons = initLessons();
+        this.actors = initActors();
+        this.pages = initPages(this.actors);
         this.activePage = this.pages.page_0_01;
+        this.activeActor = this.activePage.ActorItems[0];
         this.activateDisplayItems();
+    },
+
+    // ======= activateLessonActors =======
+    activateLessonActors: function() {
+        console.log("activateLessonActors");
+
+        for (var i = 0; i < this.activePage.ActorItems.length; i++) {
+            $('#' + this.activePage.ActorItems[i].actorId).on('mousedown', function(e) {
+                console.log("\nmousedown");
+                var actor = clientApp.actors[$(e.currentTarget).attr('id')];
+                var dragger = $(e.currentTarget);
+                console.log("actor:", actor);
+                e.preventDefault();
+                actor.initDrag(e, dragger, actor);
+            });
+            $('#' + this.activePage.ActorItems[i].actorId).on('mouseenter', function(e) {
+                console.log("\nmouseenter");
+                clientApp.toggleHoverText(e.currentTarget, "actor");
+            });
+            $('#' + this.activePage.ActorItems[i].actorId).on('mouseleave', function(e) {
+                console.log("\nmouseleave");
+                clientApp.toggleHoverText(null, null);
+            });
+        }
+
+        // ======= menu drag functions =======
+        var dragger, startLoc;
+        function initDrag(e){
+            var locXY = $(dragger).offset();
+            $(dragger).css('position', 'absolute');
+            startLoc = { x: 0, y: 0 };
+            startLoc.x = e.clientX - locXY.left;
+            startLoc.y = e.clientY - locXY.top;
+            window.addEventListener('mousemove', draggerMove, true);
+            window.addEventListener('mouseup', mouseUp, true);
+        }
+        function draggerMove(e){
+            var top = e.clientY - startLoc.y;
+            var left = e.clientX - startLoc.x;
+            $(dragger).css('top', top + 'px');
+            $(dragger).css('left', left + 'px');
+        }
+        function mouseUp() {
+            window.removeEventListener('mousemove', draggerMove, true);
+        }
+
+    },
+
+    // ======= makeLessonPage =======
+    makeLessonPage: function() {
+        console.log("makeLessonPage");
+
+        this.makeLessonText();
+        this.makeLessonActors();
+        this.makeLessonCanvases();
+        this.activateLessonActors();
+
+    },
+
+    // ======= makeLessonActors =======
+    makeLessonActors: function() {
+        console.log("makeLessonActors");
+
+        for (var i = 0; i < this.activePage.ActorItems.length; i++) {
+            var urlString = "url('images/" + this.activePage.ActorItems[i].actorImage + ".png') 0 0";
+            var newDiv = document.createElement('div');
+            newDiv.id = this.activePage.ActorItems[i].actorId;
+            newDiv.classList.add(this.activePage.ActorItems[i].actorType);
+            newDiv.style.left = this.activePage.ActorItems[i].initLoc.X + 'px';
+            newDiv.style.top = this.activePage.ActorItems[i].initLoc.Y + 'px';
+            newDiv.style.width = this.activePage.ActorItems[i].initLoc.W + 'px';
+            newDiv.style.height = this.activePage.ActorItems[i].initLoc.H + 'px';
+            newDiv.style.position = "absolute";
+            newDiv.style.zIndex = 10;
+            newDiv.style.background = urlString;
+            newDiv.style.backgroundSize =  this.activePage.ActorItems[i].initLoc.W + 'px ' + this.activePage.ActorItems[i].initLoc.H + 'px';
+            console.log("newDiv:", newDiv);
+            $('#actors').append(newDiv);
+        }
     },
 
     // ======= makeLessonCanvases =======
@@ -83,7 +135,6 @@ var clientApp = {
             var startFrame = clientApp.activePage[canvas].startFrame;
             var endFrame = clientApp.activePage[canvas].endFrame + 1;
             var initFrame = clientApp.activePage[canvas].initFrame;
-            console.log("initFrame:", initFrame);
 
             for (var i = startFrame; i < endFrame; i++) {
                 var imageFileName = (imageName + '_' + i + '.png');
@@ -95,8 +146,6 @@ var clientApp = {
             var width = can.offsetWidth;
             var height = can.offsetHeight;
             var scaleFactor = backingScale(ctx);
-            console.log("width:", width);
-            console.log("height:", height);
 
             if (scaleFactor > 1) {
                 var canW = width / scaleFactor;
@@ -106,15 +155,11 @@ var clientApp = {
                 var canW = width;
                 var canH = height;
             }
-            console.log("can:", can);
-            console.log("ctx:", ctx);
-            console.log("canW:", canW);
-            console.log("canH:", canH);
 
+            // ======= loadNextImage =======
             loadNextImage(null, 0);
             function loadNextImage(image, imageIndex) {
                 console.log("loadNextImage");
-                console.log("imageIndex/imageName:", imageIndex, imageName);
                 var imageString = "images/" + imageFilesArray[imageIndex];
                 if (imageIndex < imageFilesArray.length) {
                     var canvasImage = new Image();
@@ -131,15 +176,12 @@ var clientApp = {
                         }, 50);
                     }
                 } else {
-                    console.log("clientApp.studioImages[initFrame]:", clientApp.studioImages[initFrame]);
-                    console.log("clientApp.monitorImages[initFrame]:", clientApp.monitorImages[initFrame]);
 
                     if (canvas == "studioCanvas") {
                         var initImage = clientApp.studioImages[initFrame];
                     } else {
                         var initImage = clientApp.monitorImages[initFrame];
                     }
-                    console.log("initImage:", initImage);
                     ctx.clearRect(0, 0, 720, 405);
                     ctx.drawImage(initImage, 0, 0, 720, 405, 0, 0, 280, 140);
                     ctx.save();
@@ -173,16 +215,6 @@ var clientApp = {
         }, 2000, function() {
             console.log("done");
         });
-    },
-
-    // ======= makeLessonPage =======
-    makeLessonPage: function(lesson) {
-        console.log("makeLessonPage");
-        console.log("lesson:", lesson);
-
-        this.makeLessonText();
-        this.makeLessonCanvases();
-
     },
 
     // ======= makeMenuItem =======
@@ -237,9 +269,8 @@ var clientApp = {
 
         // == modify tab css between selected and active states
         function selectItem(itemId) {
-            console.log("selectItem");
+            // console.log("selectItem");
             var itemParentId = $('#' + itemId).parent('div').attr('id');
-            console.log("itemParentId:", itemParentId);
             $('#' + itemParentId).removeClass('tab_box_active');
             $('#' + itemParentId).addClass('tab_box_selected');
             $('#' + itemId).removeClass('label_text_active');
@@ -247,7 +278,7 @@ var clientApp = {
         }
 
         function deselectItem(itemId) {
-            console.log("deselectItem");
+            // console.log("deselectItem");
             var itemParentId = $('#' + itemId).parent('div').attr('id');
             $('#' + itemParentId).removeClass('tab_box_selected');
             $('#' + itemParentId).addClass('tab_box_active');
@@ -259,7 +290,6 @@ var clientApp = {
     // ======= activateMenuItems =======
     activateMenuItems: function(menu) {
         console.log("activateMenuItems");
-        console.log("menu:", menu);
 
         switch(menu) {
             case "lessonMenu":
@@ -268,7 +298,6 @@ var clientApp = {
             $('#lessonMenu').children('li').children('div').on('click', function(e) {
                 console.log("\n-- click");
                 clientApp.displayItems.activeLesson = e.currentTarget;
-                console.log("e.currentTarget:", e.currentTarget);
                 console.log("e.currentTarget.id:", e.currentTarget.id);
                 clientApp.makeLessonPage(e.currentTarget);
                 e.stopPropagation();
@@ -324,6 +353,8 @@ var clientApp = {
                 var itemText = clientApp.displayItems[$(item).attr('id')].itemText;
             } else if (itemType == "lesson") {
                 var itemText = clientApp.lessons[$(item).attr('id')].itemText;
+            } else if (itemType == "actor") {
+                var itemText = $(item).attr('id');
             }
             $('#hover_text').text(itemText);
         } else {
