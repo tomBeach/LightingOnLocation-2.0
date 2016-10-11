@@ -10,8 +10,8 @@
 // var Target_Data = {};
 
 var displayItems = {
-    monitor: { itemName: "monitor", itemText: "Monitor" },
-    studio: { itemName: "studio", itemText: "Studio View", W:720, H:405 },
+    monitor: { itemName: "monitor", itemText: "Monitor", canW:384, canH:180 },
+    studio: { itemName: "studio", itemText: "Studio View", canW:720, canH:405 },
     shop: { itemName: "shop", itemText: "Shop Menu" },
     lessons: { itemName: "lessons", itemText: "Lesson Menu" },
     activeLesson: null
@@ -40,6 +40,30 @@ var clientApp = {
         this.activateDisplayItems();
     },
 
+    // ======= updateCanvas =======
+    updateCanvas: function(left, top, frameIndex) {
+        // console.log("updateCanvas");
+
+        // == move actor to new location
+        $(clientApp.activeActor.actorEl).css('top', top + 'px');
+        $(clientApp.activeActor.actorEl).css('left', left + 'px');
+
+        // == canvas parameters
+        var studioImage = clientApp.studioImages[frameIndex];
+        var studioString = ('images/' + studioImage + '_' + frameIndex + '.png');
+        var studioCan = document.getElementById("studioCanvas");
+        var studioCtx = studioCan.getContext("2d");
+        studioCtx.clearRect(0, 0, 720, 405);
+        studioCtx.drawImage(studioImage, 0, 0, 720, 405, 0, 0, 280, 140);
+
+        var monitorImage = clientApp.monitorImages[frameIndex];
+        var monitorString = ('images/' + monitorImage + '_' + frameIndex + '.png');
+        var monitorCan = document.getElementById("monitorCanvas");
+        var monitorCtx = monitorCan.getContext("2d");
+        monitorCtx.clearRect(0, 0, 384, 180);
+        monitorCtx.drawImage(monitorImage, 0, 0, 720, 405, 0, 0, 280, 140);
+    },
+
     // ======= activateLessonActors =======
     activateLessonActors: function() {
         console.log("activateLessonActors");
@@ -63,34 +87,13 @@ var clientApp = {
             });
         }
 
-        // ======= menu drag functions =======
-        var dragger, startLoc;
-        function initDrag(e){
-            var locXY = $(dragger).offset();
-            $(dragger).css('position', 'absolute');
-            startLoc = { x: 0, y: 0 };
-            startLoc.x = e.clientX - locXY.left;
-            startLoc.y = e.clientY - locXY.top;
-            window.addEventListener('mousemove', draggerMove, true);
-            window.addEventListener('mouseup', mouseUp, true);
-        }
-        function draggerMove(e){
-            var top = e.clientY - startLoc.y;
-            var left = e.clientX - startLoc.x;
-            $(dragger).css('top', top + 'px');
-            $(dragger).css('left', left + 'px');
-        }
-        function mouseUp() {
-            window.removeEventListener('mousemove', draggerMove, true);
-        }
-
     },
 
     // ======= makeLessonPage =======
-    makeLessonPage: function() {
+    makeLessonPage: function(lesson) {
         console.log("makeLessonPage");
 
-        this.makeLessonText();
+        this.makeLessonText(lesson);
         this.makeLessonActors();
         this.makeLessonCanvases();
         this.activateLessonActors();
@@ -114,7 +117,6 @@ var clientApp = {
             newDiv.style.zIndex = 10;
             newDiv.style.background = urlString;
             newDiv.style.backgroundSize =  this.activePage.ActorItems[i].initLoc.W + 'px ' + this.activePage.ActorItems[i].initLoc.H + 'px';
-            console.log("newDiv:", newDiv);
             $('#actors').append(newDiv);
         }
     },
@@ -201,18 +203,22 @@ var clientApp = {
     // ======= makeLessonText =======
     makeLessonText: function(lesson) {
         console.log("makeLessonText");
+
+        // == get lesson element objects
         var lessonText = clientApp.activePage.pageText;
         var lessonId = $(lesson).attr('id');
         var lessonHtml = $(lesson).parents().eq(0).html();
         var lessonBox = $('#' + lessonId).parents().eq(2);
+
+        // == replace lesson menu with lesson text
         $('#' + lessonId).parents().eq(1).remove();
         $(lessonBox).append(lessonHtml);
         var lessonTextHtml = "<div class='lessonText hide'><p>" + lessonText + "</p></div>";
         $(lessonBox).append(lessonTextHtml);
         $( ".lessonText" ).animate({
-            height: "300px",
+            height: "200px",
             opacity: 1.0
-        }, 2000, function() {
+        }, 500, function() {
             console.log("done");
         });
     },

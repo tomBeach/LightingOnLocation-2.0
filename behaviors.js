@@ -1,3 +1,20 @@
+
+// ======= ======= ======= BEHAVIORS ======= ======= =======
+// ======= ======= ======= BEHAVIORS ======= ======= =======
+// ======= ======= ======= BEHAVIORS ======= ======= =======
+
+    // actors.drag_0_01 = new Actor(
+    //     /* actorId */ "drag_0_01",
+    //     /* actorEl */ null,
+    //     /* actorName */ "distance_650",
+    //     /* actorType */ "dragger",
+    //     /* actorImage */ "f650_0",
+    //     /* startXY */ { actorX:0, actorY:0, mouseX:0, mouseY:0, diffX:0, diffY:0 },
+    //     /* initLoc */ { X:560, Y:290, W:100, H:100 },
+    //     /* dropLoc */ { X:0, Y:0, W:0, H:0 },
+    //     /* locator */ { L:250, R:540, T:300, B:400 }
+    // );
+
 // ======= initDrag =======
 Actor.prototype.initDrag = function(e) {
     console.log("initDrag");
@@ -25,16 +42,26 @@ Actor.prototype.initDrag = function(e) {
 /// ======= sliderMove =======
 Actor.prototype.sliderMove = function(e) {
     // console.log("sliderMove");
+
     var actor = clientApp.activeActor;
-    var dX = actor.startXY.mouseX - e.clientX;
-    var dY = actor.startXY.mouseY - e.clientY;
-    var left = actor.startXY.actorX - dX;
-    var deltaX = dX/(actor.locator.R - actor.locator.L);
-    var top = actor.startXY.actorY + (actor.locator.B - actor.locator.T)*deltaX;
+
+    // == get movement boundaries
     var minX = actor.locator.L;
     var maxX = actor.locator.R;
     var minY = actor.locator.T;
     var maxY = actor.locator.B;
+    var boxW = actor.locator.R - actor.locator.L;
+    var boxH = actor.locator.B - actor.locator.T;
+
+    // == calculate change in X/Y location in pixels
+    var dX = parseInt(e.clientX - actor.startXY.mouseX);
+    var dY = parseInt(e.clientY - actor.startXY.mouseY);
+    var deltaX = (dX/boxW).toFixed(2);
+    var deltaY = (dY/boxH).toFixed(2);
+    var left = parseInt(actor.startXY.actorX + dX);
+    var top = parseInt(actor.startXY.actorY - (boxH * deltaX));
+
+    // == set movement boundaries
     if (left < minX) {
         left = minX;
     }
@@ -47,8 +74,17 @@ Actor.prototype.sliderMove = function(e) {
     if (top > maxY) {
         top = maxY;
     }
-    $(clientApp.activeActor.actorEl).css('top', top + 'px');
-    $(clientApp.activeActor.actorEl).css('left', left + 'px');
+
+    // == calculate percent movement through frameset/limit frams to start/end
+    indexX = Math.round(-deltaX * clientApp.activePage.studioCanvas.endFrame);
+    if (indexX < 0) {
+        indexX = 0;
+    }
+    if (indexX > clientApp.activePage.studioCanvas.endFrame) {
+        indexX = clientApp.activePage.studioCanvas.endFrame;
+    }
+
+    clientApp.updateCanvas(left, top, indexX);
 }
 
 // ======= draggerMove =======
@@ -77,6 +113,7 @@ Actor.prototype.draggerMove = function(e) {
     }
     $(clientApp.activeActor.actorEl).css('top', top + 'px');
     $(clientApp.activeActor.actorEl).css('left', left + 'px');
+    clientApp.updateCanvas();
 }
 
 // ======= mouseUp =======
