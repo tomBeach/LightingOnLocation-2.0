@@ -206,6 +206,34 @@ html {
     color: yellow;
 }
 
+
+#navPanel {
+	position: relative;
+	float: right;
+	width: 30px;
+	height: auto;
+	background-color: blue;
+}
+.panelBtn {
+	padding: 2px;
+	position: relative;
+	margin: 5px;
+	text-align: center;
+}
+.panelLabel {
+	color: purple;
+}
+#prev {
+	width: 20px;
+	height: 20px;
+	background-color: #eee;
+}
+#next {
+	width: 20px;
+	height: 20px;
+	background-color: #eee;
+}
+
 /* ======= lessons ======= */
 .lessonText > p {
 	margin: 10px;

@@ -3,6 +3,13 @@
 // ======= ======= ======= LESSON OBJECTS ======= ======= =======
 // ======= ======= ======= LESSON OBJECTS ======= ======= =======
 
+var defaultLesson = {
+    lessonIndex: 0,
+    lessonTitle: "lessonTitle",
+    lessonSubtitle: "lessonSubtitle",
+    lessonPages: []
+}
+
 function initLessons() {
     console.log("initLessons");
 
@@ -11,22 +18,26 @@ function initLessons() {
 
     // ======= demo items =======
 	lessons.lesson_0 = new Lesson (
+        /* lessonIndex */ 0,
         /* lessonTitle */ "Intro to Lighting",
-        /* lessonSubtitle */ "qualtity, quality, color position"
+        /* lessonSubtitle */ "qualtity, quality, color position",
+        /* lessonPages */ [clientApp.pages.page_0_0, clientApp.pages.page_0_1]
 	);
-    lessons.lesson_1 = new Lesson ( "Intensity", "lights and brightness" );
-    lessons.lesson_2 = new Lesson ( "Qualtity", "soft or hard" );
-    lessons.lesson_3 = new Lesson ( "Color", "warm, cool, effects" );
-    lessons.lesson_4 = new Lesson ( "Position", "location, location, location" );
-    lessons.lesson_5 = new Lesson ( "Instruments", "light show" );
-    lessons.lesson_6 = new Lesson ( "Stands", "from babies to mombos" );
-    lessons.lesson_7 = new Lesson ( "Controllers", "gobos, floppies, cookies and more" );
-    lessons.lesson_8 = new Lesson ( "Rigging", "hanging lights with nothing to hang on to" );
+    lessons.lesson_1 = new Lesson ( 1, "Intensity", "lights and brightness" );
+    lessons.lesson_2 = new Lesson ( 2, "Qualtity", "soft or hard" );
+    lessons.lesson_3 = new Lesson ( 3, "Color", "warm, cool, effects" );
+    lessons.lesson_4 = new Lesson ( 4, "Position", "location, location, location" );
+    lessons.lesson_5 = new Lesson ( 5, "Instruments", "light show" );
+    lessons.lesson_6 = new Lesson ( 6, "Stands", "from babies to mombos" );
+    lessons.lesson_7 = new Lesson ( 7, "Controllers", "gobos, floppies, cookies and more" );
+    lessons.lesson_8 = new Lesson ( 8, "Rigging", "hanging lights with nothing to hang on to" );
     return lessons;
 }
 
-function Lesson (lessonTitle, lessonSubtitle) {
+function Lesson (lessonIndex, lessonTitle, lessonSubtitle, lessonPages) {
     // console.log(' Lesson');
+    this.lessonIndex = lessonIndex;
     this.lessonTitle = lessonTitle;
     this.lessonSubtitle = lessonSubtitle;
+    this.lessonPages = lessonPages;
 }
