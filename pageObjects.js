@@ -36,7 +36,7 @@ function initPages(Actor_Data) {
 	);
     pages.page_0_2 = new Page (
         /* pageKey */ "0_2",
-        /* pageText */ "Often, moving lights is not easy --  especially when its a 20k HMI lighting up a city block.  But f it's too bright you csn drop a scrim into barn door frame to cut it down a bit.  Click on the Storeroom tab to grab some scrims and add them to the light.  Easy!",
+        /* pageText */ "Often, moving lights is not easy --  especially when its a 20k HMI lighting up a city block.  But if it's too bright you can drop a scrim into the barn door frame and cut it down a bit.  Drag some scrims towards the light and drop them into the barndoor frame.  Easy!",
         /* SetupItems */ [Actor_Data.f650_0_2],
         /* GroupItems */ [],
         /* MenuItems */ [Actor_Data.scrim1_0],

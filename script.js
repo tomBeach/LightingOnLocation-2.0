@@ -46,8 +46,8 @@ var clientApp = {
     // ======= makeLessonPage =======
     makeLessonPage: function(lessonEl) {
         console.log("\n ******* makeLessonPage *******");
-        console.log("activateLesson:", clientApp.activeLesson.lessonIndex);
-        console.log("activatePage:", clientApp.activePage.pageKey);
+        console.log("activeLesson:", clientApp.activeLesson.lessonIndex);
+        console.log("activePage:", clientApp.activePage.pageKey);
 
         this.initLessonCanvases();
         this.clearLessonCanvases();
@@ -181,14 +181,33 @@ var clientApp = {
 
         var setups = this.activePage.SetupItems;
         var groups = this.activePage.GroupItems;
-        var menus = this.activePage.MenuItems;
+        var items = this.activePage.MenuItems;
         var actors = this.activePage.ActorItems;
         var targets = this.activePage.TargetItems;
         var guides = this.activePage.guides;
         console.log("setups:", setups);
         console.log("actors:", actors);
 
-        var lessonItemsArray = [setups, groups, menus, actors, targets];
+        if (items.length > 0) {
+            var gridParams = getGridHW(items);
+        }
+
+        // ======= getGridHW =======
+        function getGridHW(items) {
+            console.log("getGridHW");
+            var totalW = 0;
+            var totalH = 0;
+            var gridParams = { L:0, T:0, W:100, H:100 };
+            for (var i = 0; i < items.length; i++) {
+                totalW += items[i].initLoc.W;
+                totalH += items[i].initLoc.H;
+            }
+            console.log("totalW:", totalW);
+            console.log("totalH:", totalH);
+            return gridParams;
+        }
+
+        var lessonItemsArray = [setups, groups, items, actors, targets];
 
         for (var i = 0; i < lessonItemsArray.length; i++) {
             if ((lessonItemsArray[i]) && (lessonItemsArray[i].length > 0)) {
@@ -228,11 +247,13 @@ var clientApp = {
             // ======= locateGridItems =======
             function locateGridItems(item, newDiv) {
                 console.log("locateGridItems");
+
                 newDiv.style.left = item.initLoc.L + displayItems.studio.canX + 'px';
                 newDiv.style.top = item.initLoc.T + displayItems.studio.canY + 'px';
                 newDiv.style.width = item.initLoc.W + 'px';
                 newDiv.style.height = item.initLoc.H + 'px';
-                $('#setup').append(newDiv);
+
+                $('#grid').append(newDiv);
             }
 
             // ======= locateNewSetup =======
@@ -328,20 +349,27 @@ var clientApp = {
     // ======= makeLessonMenu =======
     makeLessonMenu: function(menu) {
         console.log("makeLessonMenu");
+        var index = -1;
         var menuHtml = "<ul id='lessonMenu'>";
         $.each(this.lessons, function(key, lesson) {
-            menuHtml += clientApp.makeMenuItem(key, lesson, "lesson");
+            index++;
+            menuHtml += clientApp.makeMenuItem(key, lesson, "lesson", index);
         });
         $('#shopLesson_display').html(menuHtml);
     },
 
     // ======= makeMenuItem =======
-    makeMenuItem: function(key, lesson, menuType) {
+    makeMenuItem: function(key, lesson, menuType, index) {
         console.log("makeMenuItem");
         var itemHtml = ""
+        if (index > 2) {
+            var menuState = "lessonItem inactive";
+        } else {
+            var menuState = "lessonItem active";
+        }
         switch(menuType) {
             case "lesson":
-            itemHtml += "<li><div id='" + key + "' class='lessonItem'>";
+            itemHtml += "<li><div id='" + key + "' class='" + menuState + "'>";
             itemHtml += "<span class='menu_title_active'>" + lesson.lessonIndex + " - " + lesson.lessonTitle + "</span>"
             itemHtml += "<span class='menu_text_active'>" + lesson.lessonSubtitle + "</span>"
             itemHtml += "</div>";
@@ -618,43 +646,46 @@ var clientApp = {
         var pageIndex = parseInt(clientApp.activePage.pageKey.split("_")[1]);
         var pageCount = clientApp.activeLesson.pageKeys.length;
 
-        // == loop through pages of active lesson
-        for (var i = 0; i < pageCount; i++) {
-            var checkLessonIndex = parseInt(clientApp.activeLesson.pageKeys[i].split("_")[0]);
-            var checkPageIndex = parseInt(clientApp.activeLesson.pageKeys[i].split("_")[1]);
+        if (pageCount > 0) {
 
-            // == current page found
-            if ((lessonIndex == checkLessonIndex) && (pageIndex == checkPageIndex)) {
-                if (prevOrNext == "nextBtn") {
-                    var nextPageIndex = parseInt(pageIndex + 1);
-                    if (nextPageIndex >= pageCount) {
-                        var nextLessonIndex = parseInt(lessonIndex + 1);
-                        var nextPageIndex = 0;
-                        if (nextLessonIndex == lessonCount) {
-                            var nextLessonIndex = 0;
-                        }
-                    } else {
-                        var nextLessonIndex = lessonIndex;
-                    }
-                } else if (prevOrNext == "prevBtn") {
-                    var nextPageIndex = parseInt(pageIndex - 1);
-                    console.log("nextPageIndex:", nextPageIndex);
-                    if (nextPageIndex < 0) {
-                        var nextLessonIndex = parseInt(lessonIndex - 1);
-                        console.log("nextLessonIndex:", nextLessonIndex);
-                        if (nextLessonIndex >= 0) {
-                            var lessonName = "lesson_" + nextLessonIndex;
-                            console.log("lessonName:", lessonName);
-                            var nextPageIndex = parseInt(clientApp.lessons[lessonName].pageKeys.length - 1);
+            // == loop through pages of active lesson
+            for (var i = 0; i < pageCount; i++) {
+                var checkLessonIndex = parseInt(clientApp.activeLesson.pageKeys[i].split("_")[0]);
+                var checkPageIndex = parseInt(clientApp.activeLesson.pageKeys[i].split("_")[1]);
+
+                // == current page found
+                if ((lessonIndex == checkLessonIndex) && (pageIndex == checkPageIndex)) {
+                    if (prevOrNext == "nextBtn") {
+                        var nextPageIndex = parseInt(pageIndex + 1);
+                        if (nextPageIndex >= pageCount) {
+                            var nextLessonIndex = parseInt(lessonIndex + 1);
+                            var nextPageIndex = 0;
+                            if (nextLessonIndex == lessonCount) {
+                                var nextLessonIndex = 0;
+                            }
                         } else {
-                            var nextLessonIndex = 0;
+                            var nextLessonIndex = lessonIndex;
                         }
-                    } else {
-                        var nextLessonIndex = lessonIndex;
+                    } else if (prevOrNext == "prevBtn") {
+                        var nextPageIndex = parseInt(pageIndex - 1);
+                        console.log("nextPageIndex:", nextPageIndex);
+                        if (nextPageIndex < 0) {
+                            var nextLessonIndex = parseInt(lessonIndex - 1);
+                            console.log("nextLessonIndex:", nextLessonIndex);
+                            if (nextLessonIndex >= 0) {
+                                var lessonName = "lesson_" + nextLessonIndex;
+                                console.log("lessonName:", lessonName);
+                                var nextPageIndex = parseInt(clientApp.lessons[lessonName].pageKeys.length - 1);
+                            } else {
+                                var nextLessonIndex = 0;
+                            }
+                        } else {
+                            var nextLessonIndex = lessonIndex;
+                        }
                     }
+                    return [nextLessonIndex, nextPageIndex]
                 }
-                return [nextLessonIndex, nextPageIndex]
-            }
+                    }
         }
     },
 
@@ -697,6 +728,8 @@ var clientApp = {
         console.log("removeActorsGuides");
         var actors = $('#actors').empty();
         var guides = $('#guides').empty();
+        var actors = $('#grid').empty();
+        var actors = $('#setup').empty();
     },
 
     // ======= removeLessonItems =======

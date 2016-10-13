@@ -174,21 +174,28 @@ html {
 #lessonMenu > li {
     display: block;
 }
-.lessonItem {
+.lessonItem, .active {
     display: block;
     height: 70px;
     padding: 10px 10px;
     background-color: #aaa;
     border-bottom: solid 1px gray;
 }
-.lessonItem:hover {
+.inactive {
+    display: block;
+    height: 70px;
+    padding: 10px 10px;
+	background-color: #999;
+    border-bottom: solid 1px gray;
+}
+.active:hover {
     display: block;
     background-color: lightsteelblue;
 }
-.lessonItem:hover > .menu_title_active {
+.active:hover > .menu_title_active {
     color: #666699;
 }
-.lessonItem:hover > .menu_text_active {
+.active:hover > .menu_text_active {
     color: purple;
 }
 .menu_title_active {
@@ -197,6 +204,8 @@ html {
     padding: 0;
     font-size: 1.1em;
     font-weight: 400;
+}
+.active > .menu_title_active {
     color: purple;
 }
 .menu_text_active {
@@ -205,7 +214,15 @@ html {
     padding: 0;
     font-size: 1.0em;
     font-weight: 200;
+}
+.active > .menu_text_active {
     color: yellow;
+}
+.inactive > .menu_title_active {
+    color: gray;
+}
+.inactive > .menu_text_active {
+    color: gray;
 }
 .menu_title_selected {
 	display: list-item;
