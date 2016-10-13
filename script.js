@@ -46,10 +46,8 @@ var clientApp = {
     // ======= makeLessonPage =======
     makeLessonPage: function(lessonEl) {
         console.log("\n ******* makeLessonPage *******");
-        console.log("this.activeLesson:", this.activeLesson);
-        console.log("this.activePage:", this.activePage);
-        console.log("lessonEl:", lessonEl);
-        console.log("lessonEl.className:", lessonEl.className);
+        console.log("activateLesson:", clientApp.activeLesson.lessonIndex);
+        console.log("activatePage:", clientApp.activePage.pageKey);
 
         this.initLessonCanvases();
         this.clearLessonCanvases();
@@ -251,7 +249,7 @@ var clientApp = {
         switch(menuType) {
             case "lesson":
             itemHtml += "<li><div id='" + key + "' class='lessonItem'>";
-            itemHtml += "<span class='menu_title_active'>" + lesson.lessonTitle + "</span>"
+            itemHtml += "<span class='menu_title_active'>" + lesson.lessonIndex + " - " + lesson.lessonTitle + "</span>"
             itemHtml += "<span class='menu_text_active'>" + lesson.lessonSubtitle + "</span>"
             itemHtml += "</div>";
             break;
@@ -274,34 +272,14 @@ var clientApp = {
     },
 
     // ======= updateLessonText =======
-    updateLessonText: function() {
+    updateLessonText: function(errorText) {
         console.log("updateLessonText");
+        console.log("errorText: ", errorText);
         console.log("$('#lessonText').length:", $('#lessonText').length);
 
-        if ($('#lessonText').length > 0) {
-            $('#lessonText').animate({
-                height: 0,
-                opacity: 0
-            }, 500, function() {
-                console.log("done");
-                // == replace prev lesson text with new text
-                console.log("clientApp.activePage.pageText:", clientApp.activePage.pageText);
-                $('#lessonText').children('p').html(clientApp.activePage.pageText);
-                $('#lessonText').animate({
-                    height: "200px",
-                    opacity: 1.0
-                }, 500, function() {
-                    console.log("done");
-                });
-            });
-
-
-        } else {
-
-            // == replace lessons list with lesson text
-            console.log("clientApp.activePage.pageText:", clientApp.activePage.pageText);
+        if (errorText) {
             var lessonBox = $('#shopLesson_display');
-            var lessonText = clientApp.activePage.pageText;
+            var lessonText = errorText;
             var lessonTextHtml = "<div id='lessonText' class='hide'><p>" + lessonText + "</p></div>";
             $(lessonBox).append(lessonTextHtml);
             $('#lessonText').removeClass('hide');
@@ -311,8 +289,40 @@ var clientApp = {
             }, 500, function() {
                 console.log("done");
             });
-        }
+        } else {
+            if ($('#lessonText').length > 0) {
+                $('#lessonText').animate({
+                    height: 0,
+                    opacity: 0
+                }, 500, function() {
+                    console.log("done");
+                    // == replace prev lesson text with new text
+                    console.log("clientApp.activePage.pageText:", clientApp.activePage.pageText);
+                    $('#lessonText').children('p').html(clientApp.activePage.pageText);
+                    $('#lessonText').animate({
+                        height: "200px",
+                        opacity: 1.0
+                    }, 500, function() {
+                        console.log("done");
+                    });
+                });
+            } else {
 
+                // == replace lessons list with lesson text
+                console.log("clientApp.activePage.pageText:", clientApp.activePage.pageText);
+                var lessonBox = $('#shopLesson_display');
+                var lessonText = clientApp.activePage.pageText;
+                var lessonTextHtml = "<div id='lessonText' class='hide'><p>" + lessonText + "</p></div>";
+                $(lessonBox).append(lessonTextHtml);
+                $('#lessonText').removeClass('hide');
+                $('#lessonText').animate({
+                    height: "200px",
+                    opacity: 1.0
+                }, 500, function() {
+                    console.log("done");
+                });
+            }
+        }
     },
 
     // ======= makeLessonText =======
@@ -461,7 +471,10 @@ var clientApp = {
             // == select lesson (CLICK)
             $('#lessonMenu').children('li').children('div').on('click', function(e) {
                 console.log("\n-- click LESSON menu");
-                clientApp.displayItems.activeLesson = clientApp.lessons[e.currentTarget.id];
+                clientApp.activeLesson = clientApp.lessons[e.currentTarget.id];
+                clientApp.activePage = clientApp.pages["page_" + clientApp.lessons[e.currentTarget.id].lessonIndex + "_" + "0"];
+                console.log("activeLesson:", clientApp.activeLesson.lessonIndex);
+                console.log("activePage:", clientApp.activePage.pageKey);
                 clientApp.makeLessonPage(e.currentTarget);
                 e.stopPropagation();
             });
@@ -469,7 +482,7 @@ var clientApp = {
             // == lesson menu hover text
             $('#lessonMenu').children('li').children('div').on('mouseenter', function(e) {
                 // console.log("\n-- mouseenter");
-                clientApp.displayItems.activeLesson = e.currentTarget;
+                clientApp.activeLesson = e.currentTarget;
                 clientApp.toggleHoverText(e.currentTarget, "lesson");
                 e.stopPropagation();
             });
@@ -488,8 +501,20 @@ var clientApp = {
 
         $('#navPanel').children('div').on('click', function(e) {
             console.log("\n -- click PREV/NEXT buttons");
-            clientApp.activePage = clientApp.getNextPage(e.currentTarget.id);
-            clientApp.makeLessonPage(e.currentTarget);
+            var lessonPage = clientApp.getNextPage(e.currentTarget.id);
+            if ((lessonPage[0] != null) && (lessonPage[1] != null))   {
+                var nextLessonName = "lesson_" + lessonPage[0];
+                var nextPageName = "page_" + lessonPage[0] + "_" + lessonPage[1];
+                if (clientApp.lessons[nextLessonName] && clientApp.pages[nextPageName]) {
+                    clientApp.activeLesson = clientApp.lessons[nextLessonName];
+                    clientApp.activePage = clientApp.pages[nextPageName];
+                    clientApp.makeLessonPage(e.currentTarget);
+                } else {
+                    clientApp.updateLessonText("Sorry... requested page is missing.  Please return to home page");
+                }
+            } else {
+                clientApp.updateLessonText("Sorry... requested page is missing.  Please return to home page");
+            }
         });
         $('#navPanel').children('div').on('mouseenter', function(e) {
             // console.log("-- mouseenter");
@@ -506,47 +531,43 @@ var clientApp = {
         console.log("getNextPage");
         console.log("prevOrNext:", prevOrNext);
 
-        // == remove event listeners
-        // $('#navPanel').children('div').off();
+        var lessonIndex = parseInt(clientApp.activeLesson.lessonIndex);
+        var lessonCount = _.size(clientApp.lessons);
+        var pageIndex = parseInt(clientApp.activePage.pageKey.split("_")[1]);
+        var pageCount = clientApp.activeLesson.pageKeys.length;
 
-        // == loop throudh pages of active lesson
-        for (var i = 0; i < clientApp.activeLesson.pageKeys.length; i++) {
-            var lessonIndex = clientApp.activeLesson.pageKeys[i].split("_")[0];
-            var pageIndex = clientApp.activeLesson.pageKeys[i].split("_")[1];
-            console.log("lessonIndex:", lessonIndex);
-            console.log("lessonIndex:", lessonIndex);
+        // == loop through pages of active lesson
+        for (var i = 0; i < pageCount; i++) {
+            var checkLessonIndex = clientApp.activeLesson.pageKeys[i].split("_")[0];
+            var checkPageIndex = clientApp.activeLesson.pageKeys[i].split("_")[1];
 
             // == current page found
-            if (pageIndex == clientApp.activePage.pageKey.split("_")[1]) {
+            if ((lessonIndex == checkLessonIndex) && (pageIndex == checkPageIndex)) {
                 if (prevOrNext == "nextBtn") {
-                    // == load next page in same lesson
-                    if (pageIndex < clientApp.activeLesson.pageKeys.length - 1) {
-                        var nextPageIndex = i + 1;
-                        console.log("nextPageIndex:", nextPageIndex);
-                        return clientApp.pages["page_" + lessonIndex + "_" + nextPageIndex];
-
-                    // == load first page in next lesson
+                    var nextPageIndex = parseInt(pageIndex + 1);
+                    if (nextPageIndex >= pageCount) {
+                        var nextLessonIndex = parseInt(lessonIndex + 1);
+                        var nextPageIndex = 0;
+                        if (nextLessonIndex == lessonCount) {
+                            var nextLessonIndex = 0;
+                        }
                     } else {
-                        lessonIndex++;
-                        console.log("lessonIndex:", lessonIndex);
-                        clientApp.activeLesson = clientApp.lessons["lesson_" + lessonIndex];
-                        return clientApp.pages["page_" + lessonIndex + "_" + 0];
+                        var nextLessonIndex = lessonIndex;
                     }
-                } else {
-                    // == load prev page in same lesson
-                    if (pageIndex > clientApp.activeLesson.pageKeys[0].split("_")[1]) {
-                        var nextPageIndex = i - 1;
-                        console.log("nextPageIndex:", nextPageIndex);
-                        return clientApp.pages["page_" + lessonIndex + "_" + nextPageIndex];
-
-                    // == load last page in prev lesson
+                } else if (prevOrNext == "prevBtn") {
+                    var nextPageIndex = parseInt(pageIndex - 1);
+                    if (nextPageIndex < 0) {
+                        var nextLessonIndex = parseInt(lessonIndex - 1);
+                        if (nextLessonIndex >= 0) {
+                            var nextPageIndex = clientApp.lessons["lesson_ " + nextLessonIndex].pageKeys.length - 1;
+                        } else {
+                            var nextLessonIndex = 0;
+                        }
                     } else {
-                        lessonIndex--;
-                        console.log("lessonIndex:", lessonIndex);
-                        clientApp.activeLesson = clientApp.lessons["lesson_" + lessonIndex];
-                        return clientApp.pages["page_" + lessonIndex + "_" + clientApp.lessons["lesson_" + lessonIndex].pageKeys.length];
+                        var nextLessonIndex = lessonIndex;
                     }
                 }
+                return [nextLessonIndex, nextPageIndex]
             }
         }
     },

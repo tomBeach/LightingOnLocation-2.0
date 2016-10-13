@@ -32,6 +32,28 @@ function initPages(Actor_Data) {
         /* studio */ { text:null, image:"st_int_distance", startFrame:0, endFrame:6, initFrame:0 },
         /* monitor */ { text:null, image:"mn_int_distance", startFrame:0, endFrame:6, initFrame:0 }
 	);
+    pages.page_0_2 = new Page (
+        /* pageKey */ "0_2",
+        /* pageText */ "Ykzsgdf lzisuh lzsifg kzsjdgfl Skgf lSgf lsigf lisudgf liUSGf lIUSgf SUfg Siufh ",
+        /* SetupItems */ [],
+        /* GroupItems */ [],
+        /* MenuItems */ [],
+        /* ActorItems */ [],
+        /* TargetItems */ [],
+        /* studio */ { text:null, image:null, startFrame:0, endFrame:6, initFrame:0 },
+        /* monitor */ { text:null, image:null, startFrame:0, endFrame:6, initFrame:0 }
+	);
+	pages.page_1_0 = new Page (
+        /* pageKey */ "1_0",
+        /* pageText */ "s;roh sdofh sdofuhzs lfhlkxdjhfL SouhlSIDugf ?",
+        /* SetupItems */ [],
+        /* GroupItems */ [],
+        /* MenuItems */ [],
+        /* ActorItems */ [Actor_Data.slider_0_01],
+        /* TargetItems */ [],
+        /* studio */ { text:null, image:"st_int_distance", startFrame:0, endFrame:6, initFrame:0 },
+        /* monitor */ { text:null, image:"mn_int_distance", startFrame:0, endFrame:6, initFrame:0 }
+	);
     return pages;
 }
 
