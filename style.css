@@ -192,6 +192,7 @@ html {
     color: purple;
 }
 .menu_title_active {
+	display: block;
     margin: 0;
     padding: 0;
     font-size: 1.1em;
@@ -199,50 +200,68 @@ html {
     color: purple;
 }
 .menu_text_active {
+	display: block;
     margin: 5px 10px;
     padding: 0;
     font-size: 1.0em;
     font-weight: 200;
     color: yellow;
 }
+.menu_title_selected {
+	display: list-item;
+	width: 90%;
+}
+.menu_text_selected {
+	display: list-item;
+	width: 90%;
+}
+.selectedLesson {
+	display: inline-block;
+	float: left;
+	width: 90%;
+    height: 70px;
+	margin: 0 0 20px 0;
+    padding: 10px 10px 30px 10px;
+    background-color: #aaa;
+    border-bottom: solid 1px gray;
+}
 
-
+/* ======= navPanel ======= */
 #navPanel {
-	position: relative;
-	float: right;
-	width: 30px;
+	display: inline-block;
+	width: 5%;
 	height: auto;
-	background-color: blue;
+	margin-bottom: 30px;
 }
 .panelBtn {
-	padding: 2px;
-	position: relative;
-	margin: 5px;
+	width: 30px;
+	height: 30px;
+	margin: 4px;
+	padding: 8px;
 	text-align: center;
 }
 .panelLabel {
 	color: purple;
 }
-#prev {
-	width: 20px;
-	height: 20px;
-	background-color: #eee;
+#prevBtn {
+	background-color: lavender;
 }
-#next {
-	width: 20px;
-	height: 20px;
-	background-color: #eee;
+#nextBtn {
+	background-color: orange;
 }
 
 /* ======= lessons ======= */
-.lessonText > p {
+.hide {
+	display: none;
+}
+#lessonText {
+	height: 0;
+	opacity: 0;
+}
+#lessonText > p {
 	margin: 10px;
 	line-height: 30px;
 	color: #222;
-}
-.lessonText {
-	height: 0;
-	opacity: 0;
 }
 
 /* ======= canvases ======= */

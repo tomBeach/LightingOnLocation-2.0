@@ -12,25 +12,25 @@ function initPages(Actor_Data) {
     // ======= demo items =======
     pages.page_0_0 = new Page (
         /* pageKey */ "0_0",
-        /* pageText */ "Intro to Lighting Lorem ipsum dolor sit amet, sit quem fabulas recusabo eu, ea quod definiebas his. Ut justo repudiare pertinacia quo, eum libris meliore dignissim no. Sint inimicus assueverit vis te. Nam ei quando aliquam tibique, debet senserit voluptatum cu quo. Duo augue error vocibus cu. Ius docendi posidonium ei, cum mundi ponderum cu, postea philosophia ad est. His eu nihil ceteros noluisse, ad sea facilis omittantur. Tota iriure ex sit, eum erant assentior voluptaria ut, lucilius patrioque quo no. In vis quod vide noster. Autem mucius copiosae cu pri, aeque graece est ut.",
+        /* pageText */ "You were hired as the grip for a big production but the DP called in.  Now the job is yours and the crew is waiting.  Better know how to light up a set!  Keep reading.  If you don't know, you will soon!",
         /* SetupItems */ [],
         /* GroupItems */ [],
         /* MenuItems */ [],
-        /* ActorItems */ [Actor_Data.slider_0_01],
+        /* ActorItems */ [],
         /* TargetItems */ [],
-        /* studio */ { image:"st_int_distance", startFrame:0, endFrame:6, initFrame:0 },
-        /* monitor */ { image:"mn_int_distance", startFrame:0, endFrame:6, initFrame:0 }
+        /* studio */ { text:null, image:null, startFrame:0, endFrame:6, initFrame:0 },
+        /* monitor */ { text:null, image:null, startFrame:0, endFrame:6, initFrame:0 }
 	);
 	pages.page_0_1 = new Page (
         /* pageKey */ "0_1",
-        /* pageText */ "Intensity and distance. Fabulas recusabo eu, ea quod definiebas his. Ut justo repudiare pertinacia quo, eum libris meliore dignissim no. Sint inimicus assueverit vis te. Nam ei quando aliquam tibique, debet senserit voluptatum cu quo. Duo augue error vocibus cu. Ius docendi posidonium ei, cum mundi ponderum cu, postea philosophia ad est. His eu nihil ceteros noluisse, ad sea facilis omittantur. Tota iriure ex sit, eum erant assentior voluptaria ut, lucilius patrioque quo no. In vis quod vide noster. Autem mucius copiosae cu pri, aeque graece est ut.",
+        /* pageText */ "The first thing to know is intensity: how bright the light is.  There are many ways to control intensity.  Number 1: distance.  The closer your light is to the subject, the brighter it is.  DSrag the light icon to see how brightness changes with distance.  What else happens as you move the light in and out?",
         /* SetupItems */ [],
         /* GroupItems */ [],
         /* MenuItems */ [],
         /* ActorItems */ [Actor_Data.slider_0_01],
         /* TargetItems */ [],
-        /* studio */ { image:"st_int_distance", startFrame:0, endFrame:6, initFrame:0 },
-        /* monitor */ { image:"mn_int_distance", startFrame:0, endFrame:6, initFrame:0 }
+        /* studio */ { text:null, image:"st_int_distance", startFrame:0, endFrame:6, initFrame:0 },
+        /* monitor */ { text:null, image:"mn_int_distance", startFrame:0, endFrame:6, initFrame:0 }
 	);
     return pages;
 }

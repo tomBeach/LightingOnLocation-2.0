@@ -1,4 +1,3 @@
-
 // ======= ======= ======= ======= ======= objects ======= ======= ======= ======= =======
 // ======= ======= ======= ======= ======= objects ======= ======= ======= ======= =======
 // ======= ======= ======= ======= ======= objects ======= ======= ======= ======= =======
@@ -38,90 +37,73 @@ var clientApp = {
         this.pages = initPages(this.actors);
         this.lessons = initLessons();
         this.activePage = this.pages.page_0_0;
-        this.activeActor = this.activePage.ActorItems[0];
+        this.activeLesson = this.lessons.lesson_0;
+        this.activeActor = null;
         this.activateDisplayItems();
-    },
 
-    // ======= getNextPage =======
-    getNextPage: function(pageRequest) {
-        console.log("getNextPage");
-
-        var lessonIndex = clientApp.activeLesson.lessonIndex;
-        var pageIndex = getPageIndex();
-        switch(pageRequest) {
-            case "prev":
-            if (lessonIndex > 0) {
-                var nextLesson = lessonIndex - 1;
-            } else {
-                var nextLesson = 0;
-            }
-            case "next":
-            if (lessonIndex < clientApp.lessons.length) {
-                var nextLesson = lessonIndex + 1;
-            } else {
-                var nextLesson = clientApp.lessons.length - 1;
-            }
-        }
-
-        // ======= getPageIndex =======
-        function getPageIndex() {
-            console.log("getPageIndex");
-            $.each(clientApp.activeLesson.pages, function(key, value) {
-
-            })
-        }
     },
 
     // ======= makeLessonPage =======
-    makeLessonPage: function(lesson) {
-        console.log("makeLessonPage");
+    makeLessonPage: function(lessonEl) {
+        console.log("\n ******* makeLessonPage *******");
+        console.log("this.activeLesson:", this.activeLesson);
+        console.log("this.activePage:", this.activePage);
+        console.log("lessonEl:", lessonEl);
+        console.log("lessonEl.className:", lessonEl.className);
 
         this.initLessonCanvases();
+        this.clearLessonCanvases();
         this.makeLessonCanvases();
-        this.makeActorGuides();
         this.makeLessonActors();
-        this.makeLessonText(lesson);
         this.activateLessonActors();
+        if (lessonEl.className == "panelBtn") {
+            this.updateLessonText();
+        } else {
+            this.makeLessonText(lessonEl);
+        }
     },
 
     // ======= initLessonCanvases =======
     initLessonCanvases: function(lesson) {
         console.log("initLessonCanvases");
 
-        // == make canvas ans context objects
-        var canvases = ["studio", "monitor"];
-        for (var i = 0; i < canvases.length; i++) {
-            var can = document.getElementById(canvases[i] + "Canvas");
-            var ctx = can.getContext("2d");
-            var width = can.offsetWidth;
-            var height = can.offsetHeight;
-            var scaleFactor = backingScale(ctx);
+        if (!this.displayItems["studio"].can) {
 
-            // == detect retina display
-            if (scaleFactor > 1) {
-                var canW = width / scaleFactor;
-                var canH = height / scaleFactor;
-                var ctx = can.getContext('2d');
-            } else {
-                var canW = width;
-                var canH = height;
-            }
+            // == make canvas and context objects
+            var canvases = ["studio", "monitor"];
+            for (var i = 0; i < canvases.length; i++) {
+                var can = document.getElementById(canvases[i] + "Canvas");
+                var ctx = can.getContext("2d");
+                var width = can.offsetWidth;
+                var height = can.offsetHeight;
+                var scaleFactor = backingScale(ctx);
 
-            // == store can/ctx on app object
-            displayItems[canvases[i]].can = can;
-            displayItems[canvases[i]].canW = canW;
-            displayItems[canvases[i]].canH = canH;
-            displayItems[canvases[i]].ctx = ctx;
-        }
-
-        // ======= backingScale =======
-        function backingScale(context) {
-            if ('devicePixelRatio' in window) {
-                if (window.devicePixelRatio > 1) {
-                    return window.devicePixelRatio;
+                // == detect retina display
+                if (scaleFactor > 1) {
+                    var canW = width / scaleFactor;
+                    var canH = height / scaleFactor;
+                    var ctx = can.getContext('2d');
+                } else {
+                    var canW = width;
+                    var canH = height;
                 }
+
+                // == store can/ctx on app object
+                this.displayItems[canvases[i]].can = can;
+                this.displayItems[canvases[i]].ctx = ctx;
+                this.displayItems[canvases[i]].canW = canW;
+                this.displayItems[canvases[i]].canH = canH;
             }
-            return 1;
+
+            // ======= backingScale =======
+            function backingScale(context) {
+                if ('devicePixelRatio' in window) {
+                    if (window.devicePixelRatio > 1) {
+                        return window.devicePixelRatio;
+                    }
+                }
+                return 1;
+            }
         }
     },
 
@@ -129,8 +111,10 @@ var clientApp = {
     makeLessonCanvases: function(lesson) {
         console.log("makeLessonCanvases");
 
-        loadCanvasImages("studio");
-        loadCanvasImages("monitor");
+        if (this.activePage.studio.image) {
+            loadCanvasImages("studio");
+            loadCanvasImages("monitor");
+        }
 
         // ======= loadCanvasImages =======
         function loadCanvasImages(canvas) {
@@ -192,20 +176,47 @@ var clientApp = {
         }
     },
 
+    // ======= makeLessonActors =======
+    makeLessonActors: function() {
+        console.log("makeLessonActors");
+
+        if (this.activePage.ActorItems.length > 0) {
+            var actor, urlString, newDiv;
+            for (var i = 0; i < this.activePage.ActorItems.length; i++) {
+                actor = this.activePage.ActorItems[i];
+                urlString = "url('images/" + this.activePage.ActorItems[i].actorImage + ".png') 0 0";
+                newDiv = document.createElement('div');
+                newDiv.id = this.activePage.ActorItems[i].actorId;
+                newDiv.classList.add(this.activePage.ActorItems[i].actorType);
+                newDiv.style.left = this.activePage.ActorItems[i].initLoc.L + displayItems.studio.canX + 'px';
+                newDiv.style.top = this.activePage.ActorItems[i].initLoc.T + displayItems.studio.canY + 'px';
+                newDiv.style.width = this.activePage.ActorItems[i].initLoc.W + 'px';
+                newDiv.style.height = this.activePage.ActorItems[i].initLoc.H + 'px';
+                newDiv.style.position = "absolute";
+                newDiv.style.zIndex = 2;
+                newDiv.style.background = urlString;
+                newDiv.style.backgroundSize =  this.activePage.ActorItems[i].initLoc.W + 'px ' + this.activePage.ActorItems[i].initLoc.H + 'px';
+                $('#actors').append(newDiv);
+
+                this.makeActorGuides(actor);
+            }
+        }
+    },
+
     // ======= makeActorGuides =======
-    makeActorGuides: function() {
+    makeActorGuides: function(actor) {
         console.log("makeActorGuides");
 
         // == make svg guide elements
         var guidesEl = document.getElementById("guides");
         guidesEl.style.position = "absolute";
-        guidesEl.style.left = (this.activeActor.locator.L + displayItems.studio.canX) + 'px';
-        guidesEl.style.top = (this.activeActor.locator.T + displayItems.studio.canY + 30) + 'px';
-        guidesEl.style.width = this.activeActor.locator.W + 'px';
-        guidesEl.style.height = this.activeActor.locator.H + 'px';
+        guidesEl.style.left = (actor.locator.L + displayItems.studio.canX) + 'px';
+        guidesEl.style.top = (actor.locator.T + displayItems.studio.canY + 30) + 'px';
+        guidesEl.style.width = actor.locator.W + 'px';
+        guidesEl.style.height = actor.locator.H + 'px';
         guidesEl.style.zIndex = 1;
 
-        var data = [[0, this.activeActor.locator.H], [this.activeActor.locator.W, 0]];
+        var data = [[0, actor.locator.H], [actor.locator.W, 0]];
         var line = d3.line(data);
         var lineGenerator = d3.line();
         var pathString = lineGenerator(data);
@@ -213,88 +224,14 @@ var clientApp = {
         // == make svg line element
         var svgEl = d3.select(guidesEl)
             .append("svg")
-                .attr("width", this.activeActor.locator.W)
-                .attr("height", this.activeActor.locator.H);
+                .attr("width", actor.locator.W)
+                .attr("height", actor.locator.H);
         svgEl.append("path");
         d3.select('path')
         	.attr('d', pathString)
             .style("stroke", "red")
             .style("stroke-weight", "2")
             .style("fill", "none");
-    },
-
-    // ======= makeLessonActors =======
-    makeLessonActors: function() {
-        console.log("makeLessonActors");
-
-        // == make, locate and style actor items
-        for (var i = 0; i < this.activePage.ActorItems.length; i++) {
-            var urlString = "url('images/" + this.activePage.ActorItems[i].actorImage + ".png') 0 0";
-            var newDiv = document.createElement('div');
-            newDiv.id = this.activePage.ActorItems[i].actorId;
-            newDiv.classList.add(this.activePage.ActorItems[i].actorType);
-            newDiv.style.left = this.activePage.ActorItems[i].initLoc.L + displayItems.studio.canX + 'px';
-            newDiv.style.top = this.activePage.ActorItems[i].initLoc.T + displayItems.studio.canY + 'px';
-            newDiv.style.width = this.activePage.ActorItems[i].initLoc.W + 'px';
-            newDiv.style.height = this.activePage.ActorItems[i].initLoc.H + 'px';
-            newDiv.style.position = "absolute";
-            newDiv.style.zIndex = 2;
-            newDiv.style.background = urlString;
-            newDiv.style.backgroundSize =  this.activePage.ActorItems[i].initLoc.W + 'px ' + this.activePage.ActorItems[i].initLoc.H + 'px';
-            $('#actors').append(newDiv);
-        }
-    },
-
-    // ======= makeLessonText =======
-    makeLessonText: function(lesson) {
-        console.log("makeLessonText");
-
-        // == get selected lesson elements
-        var navPanel;
-        var lessonText = clientApp.activePage.pageText;
-        var lessonId = $(lesson).attr('id');
-        var lessonHtml = $(lesson).parents().eq(0).html();
-        var lessonBox = $('#' + lessonId).parents().eq(2);
-
-        // == make prevNext openClose buttons
-        navPanel += "<nav id='navPanel'><div id='prev' class='panelBtn'><span>P</span></div>";
-        navPanel += "<div id='next' class='panelBtn'><span>N</span></div></nav>";
-
-        //     append menuHtml
-        //     style buttons
-        //     activate buttons
-        //
-        // // == slide next lessons
-        //     lesson collection
-        //     style lessons
-        //     set lesson position
-        //
-        // // == load selected lesson text
-        //     selectedLesson.lessonText
-        //     build menuHtml
-        //     style lessonText
-        //     append menuHtml
-        //
-        // // == lesson text links
-        //     link to lesson/page
-
-        // == get all lesson elements
-        var lessonItems = $('.lessonItem:gt(1)');
-        var lessonItems = $('.lessonItem');
-        var index = $(lessonItems).index(lesson);
-
-        // == replace lesson menu with lesson text
-        $('#' + lessonId).parents().eq(1).remove();
-        $(lessonBox).append(lessonHtml);
-        var lessonTextHtml = "<div class='lessonText hide'><p>" + lessonText + "</p></div>";
-        $(lessonBox).append(lessonTextHtml);
-        $( ".lessonText" ).animate({
-            height: "200px",
-            opacity: 1.0
-        }, 500, function() {
-            console.log("done");
-        });
-
     },
 
     // ======= makeLessonMenu =======
@@ -314,8 +251,8 @@ var clientApp = {
         switch(menuType) {
             case "lesson":
             itemHtml += "<li><div id='" + key + "' class='lessonItem'>";
-            itemHtml += "<p class='menu_title_active'>" + lesson.lessonTitle + "</p>"
-            itemHtml += "<p class='menu_text_active'>" + lesson.lessonSubtitle + "</p>"
+            itemHtml += "<span class='menu_title_active'>" + lesson.lessonTitle + "</span>"
+            itemHtml += "<span class='menu_text_active'>" + lesson.lessonSubtitle + "</span>"
             itemHtml += "</div>";
             break;
             case "grid":
@@ -336,16 +273,80 @@ var clientApp = {
         $('#shopLesson_display').html(menuHtml);
     },
 
-    // ======= removeLessonItems =======
-    removeLessonItems: function() {
-        console.log("removeLessonItems");
-        var lessonItems = $('#lessonMenu').remove();
+    // ======= updateLessonText =======
+    updateLessonText: function() {
+        console.log("updateLessonText");
+        console.log("$('#lessonText').length:", $('#lessonText').length);
+
+        if ($('#lessonText').length > 0) {
+            $('#lessonText').animate({
+                height: 0,
+                opacity: 0
+            }, 500, function() {
+                console.log("done");
+                // == replace prev lesson text with new text
+                console.log("clientApp.activePage.pageText:", clientApp.activePage.pageText);
+                $('#lessonText').children('p').html(clientApp.activePage.pageText);
+                $('#lessonText').animate({
+                    height: "200px",
+                    opacity: 1.0
+                }, 500, function() {
+                    console.log("done");
+                });
+            });
+
+
+        } else {
+
+            // == replace lessons list with lesson text
+            console.log("clientApp.activePage.pageText:", clientApp.activePage.pageText);
+            var lessonBox = $('#shopLesson_display');
+            var lessonText = clientApp.activePage.pageText;
+            var lessonTextHtml = "<div id='lessonText' class='hide'><p>" + lessonText + "</p></div>";
+            $(lessonBox).append(lessonTextHtml);
+            $('#lessonText').removeClass('hide');
+            $('#lessonText').animate({
+                height: "200px",
+                opacity: 1.0
+            }, 500, function() {
+                console.log("done");
+            });
+        }
+
     },
 
-    // ======= removeGridItems =======
-    removeGridItems: function(menu) {
-        console.log("removeGridItems");
-        var gridItems = $('.grid_item').remove();
+    // ======= makeLessonText =======
+    makeLessonText: function(lessonEl) {
+        console.log("makeLessonText");
+
+        var navPanel = "";
+
+        // == get selected lesson elements
+        var lessonId = $(lessonEl).attr('id');
+        var lessonBox = $('#shopLesson_display');
+        var lessonHtml = $(lessonEl).parents().eq(0).html();
+        console.log("lessonId:", lessonId);
+        console.log("lessonBox:", lessonBox);
+
+        // == make prevNext openClose buttons
+        navPanel += "<nav id='navPanel'><div id='prevBtn' class='panelBtn'><span>P</span></div>";
+        navPanel += "<div id='nextBtn' class='panelBtn'><span>N</span></div></nav>";
+
+        // == get all lesson elements
+        var lessonItems = $('.lessonItem:gt(1)');
+        var index = $(lessonItems).index(lessonEl);
+
+        // == replace lesson menu with selected lesson and lesson text
+        $('#' + lessonId).parents().eq(1).remove();
+        $(lessonBox).append(lessonHtml);
+
+        // == change lesson container class to hold prevNext buttons
+        $('#' + lessonId).removeClass('lessonItem');
+        $('#' + lessonId).addClass('selectedLesson');
+        $(lessonBox).append(navPanel);
+
+        this.updateLessonText();
+        this.activatePrevNext();
     },
 
     // ======= selectSectionItem =======
@@ -355,19 +356,19 @@ var clientApp = {
 
         switch (itemId) {
             case "lessons":
-            deselectItem("shop");
-            selectItem(itemId);
-            this.removeGridItems();
-            this.makeLessonMenu();
-            this.activateMenuItems("lessonMenu");
-            break;
+                deselectItem("shop");
+                selectItem(itemId);
+                this.removeGridItems();
+                this.makeLessonMenu();
+                this.activateMenuItems("lessonMenu");
+                break;
             case "shop":
-            deselectItem("lessons");
-            selectItem(itemId);
-            this.removeLessonItems();
-            this.makeGridMenu();
-            this.activateGridItems("lessonMenu");
-            break;
+                deselectItem("lessons");
+                selectItem(itemId);
+                this.removeLessonItems();
+                this.makeGridMenu();
+                this.activateGridItems("lessonMenu");
+                break;
         }
 
         // == modify tab css between selected and active states
@@ -390,78 +391,39 @@ var clientApp = {
         }
     },
 
+// ======= ======= ======= ACTIVATORS ======= ======= =======
+// ======= ======= ======= ACTIVATORS ======= ======= =======
+// ======= ======= ======= ACTIVATORS ======= ======= =======
+
     // ======= activateLessonActors =======
     activateLessonActors: function() {
         console.log("activateLessonActors");
 
-        for (var i = 0; i < this.activePage.ActorItems.length; i++) {
-            $('#' + this.activePage.ActorItems[i].actorId).on('mousedown', function(e) {
-                console.log("\nmousedown");
-                var actor = clientApp.actors[$(e.currentTarget).attr('id')];
-                var dragger = $(e.currentTarget);
-                e.preventDefault();
-                actor.initDrag(e, dragger, actor);
-            });
-            $('#' + this.activePage.ActorItems[i].actorId).on('mouseenter', function(e) {
-                // console.log("\nmouseenter");
-                clientApp.toggleHoverText(e.currentTarget, "actor");
-            });
-            $('#' + this.activePage.ActorItems[i].actorId).on('mouseleave', function(e) {
-                // console.log("\nmouseleave");
-                clientApp.toggleHoverText(null, null);
-            });
+        if (this.activePage.ActorItems.length > 0) {
+            for (var i = 0; i < this.activePage.ActorItems.length; i++) {
+                $('#' + this.activePage.ActorItems[i].actorId).on('mousedown', function(e) {
+                    console.log("\nmousedown");
+                    var actor = clientApp.actors[$(e.currentTarget).attr('id')];
+                    var dragger = $(e.currentTarget);
+                    e.preventDefault();
+                    clientApp.activeActor = actor;
+                    actor.initDrag(e, dragger, actor);
+                });
+                $('#' + this.activePage.ActorItems[i].actorId).on('mouseenter', function(e) {
+                    // console.log("\nmouseenter");
+                    clientApp.toggleHoverText(e.currentTarget, "actor");
+                });
+                $('#' + this.activePage.ActorItems[i].actorId).on('mouseleave', function(e) {
+                    // console.log("\nmouseleave");
+                    clientApp.toggleHoverText(null, null);
+                });
+            }
         }
-
     },
 
     // ======= activateGridItems =======
     activateGridItems: function() {
         console.log("activateGridItems");
-    },
-
-    // ======= activateMenuItems =======
-    activateMenuItems: function(menu) {
-        console.log("activateMenuItems");
-
-        switch(menu) {
-            case "panelNav":
-
-            // == select panel button (CLICK)
-            $('#panelNav').children('div').on('click', function(e) {
-                console.log("\n-- click");
-                console.log("e.currentTarget.id:", e.currentTarget.id);
-                clientApp.getNextPage(e.currentTarget);
-                clientApp.makeLessonPage(e.currentTarget);
-                e.stopPropagation();
-            });
-
-            case "lessonMenu":
-
-            // == select lesson (CLICK)
-            $('#lessonMenu').children('li').children('div').on('click', function(e) {
-                console.log("\n-- click");
-                clientApp.displayItems.activeLesson = e.currentTarget;
-                console.log("e.currentTarget.id:", e.currentTarget.id);
-                clientApp.activeLesson = e.currentTarget.id;
-                clientApp.makeLessonPage(e.currentTarget);
-                e.stopPropagation();
-            });
-
-            // == lesson menu hover text
-            $('#lessonMenu').children('li').children('div').on('mouseenter', function(e) {
-                // console.log("\n-- mouseenter");
-                clientApp.displayItems.activeLesson = e.currentTarget;
-                clientApp.toggleHoverText(e.currentTarget, "lesson");
-                e.stopPropagation();
-            });
-            $('#lessonMenu').children('li').children('div').on('mouseleave', function(e) {
-                // console.log("\n-- mouseleave");
-                clientApp.toggleHoverText(null, null);
-                e.stopPropagation();
-            });
-            break;
-        }
-
     },
 
     // ======= activateDisplayItems =======
@@ -489,6 +451,106 @@ var clientApp = {
 
     },
 
+    // ======= activateMenuItems =======
+    activateMenuItems: function(menu) {
+        console.log("activateMenuItems");
+
+        switch(menu) {
+            case "lessonMenu":
+
+            // == select lesson (CLICK)
+            $('#lessonMenu').children('li').children('div').on('click', function(e) {
+                console.log("\n-- click LESSON menu");
+                clientApp.displayItems.activeLesson = clientApp.lessons[e.currentTarget.id];
+                clientApp.makeLessonPage(e.currentTarget);
+                e.stopPropagation();
+            });
+
+            // == lesson menu hover text
+            $('#lessonMenu').children('li').children('div').on('mouseenter', function(e) {
+                // console.log("\n-- mouseenter");
+                clientApp.displayItems.activeLesson = e.currentTarget;
+                clientApp.toggleHoverText(e.currentTarget, "lesson");
+                e.stopPropagation();
+            });
+            $('#lessonMenu').children('li').children('div').on('mouseleave', function(e) {
+                // console.log("\n-- mouseleave");
+                clientApp.toggleHoverText(null, null);
+                e.stopPropagation();
+            });
+            break;
+        }
+    },
+
+    // ======= activatePrevNext =======
+    activatePrevNext: function() {
+        console.log("activatePrevNext");
+
+        $('#navPanel').children('div').on('click', function(e) {
+            console.log("\n -- click PREV/NEXT buttons");
+            clientApp.activePage = clientApp.getNextPage(e.currentTarget.id);
+            clientApp.makeLessonPage(e.currentTarget);
+        });
+        $('#navPanel').children('div').on('mouseenter', function(e) {
+            // console.log("-- mouseenter");
+            clientApp.toggleHoverText(e.currentTarget, null);
+        });
+        $('#navPanel').children('div').on('mouseleave', function(e) {
+            // console.log("-- mouseleave");
+            clientApp.toggleHoverText(e.currentTarget, null);
+        });
+    },
+
+    // ======= getNextPage =======
+    getNextPage: function(prevOrNext) {
+        console.log("getNextPage");
+        console.log("prevOrNext:", prevOrNext);
+
+        // == remove event listeners
+        // $('#navPanel').children('div').off();
+
+        // == loop throudh pages of active lesson
+        for (var i = 0; i < clientApp.activeLesson.pageKeys.length; i++) {
+            var lessonIndex = clientApp.activeLesson.pageKeys[i].split("_")[0];
+            var pageIndex = clientApp.activeLesson.pageKeys[i].split("_")[1];
+            console.log("lessonIndex:", lessonIndex);
+            console.log("lessonIndex:", lessonIndex);
+
+            // == current page found
+            if (pageIndex == clientApp.activePage.pageKey.split("_")[1]) {
+                if (prevOrNext == "nextBtn") {
+                    // == load next page in same lesson
+                    if (pageIndex < clientApp.activeLesson.pageKeys.length - 1) {
+                        var nextPageIndex = i + 1;
+                        console.log("nextPageIndex:", nextPageIndex);
+                        return clientApp.pages["page_" + lessonIndex + "_" + nextPageIndex];
+
+                    // == load first page in next lesson
+                    } else {
+                        lessonIndex++;
+                        console.log("lessonIndex:", lessonIndex);
+                        clientApp.activeLesson = clientApp.lessons["lesson_" + lessonIndex];
+                        return clientApp.pages["page_" + lessonIndex + "_" + 0];
+                    }
+                } else {
+                    // == load prev page in same lesson
+                    if (pageIndex > clientApp.activeLesson.pageKeys[0].split("_")[1]) {
+                        var nextPageIndex = i - 1;
+                        console.log("nextPageIndex:", nextPageIndex);
+                        return clientApp.pages["page_" + lessonIndex + "_" + nextPageIndex];
+
+                    // == load last page in prev lesson
+                    } else {
+                        lessonIndex--;
+                        console.log("lessonIndex:", lessonIndex);
+                        clientApp.activeLesson = clientApp.lessons["lesson_" + lessonIndex];
+                        return clientApp.pages["page_" + lessonIndex + "_" + clientApp.lessons["lesson_" + lessonIndex].pageKeys.length];
+                    }
+                }
+            }
+        }
+    },
+
     // ======= ======= ======= UTILITIES ======= ======= =======
     // ======= ======= ======= UTILITIES ======= ======= =======
     // ======= ======= ======= UTILITIES ======= ======= =======
@@ -513,6 +575,28 @@ var clientApp = {
         monitorCtx.drawImage(monitorImage, 0, 0, 720, 405, 0, 0, 280, 140);
     },
 
+    // ======= clearLessonCanvases =======
+    clearLessonCanvases: function() {
+        console.log("clearLessonCanvases");
+
+        var canvases = ["studio", "monitor"];
+        for (var i = 0; i < canvases.length; i++) {
+            this.displayItems[canvases[i]].ctx.clearRect(0, 0, 720, 405);
+        }
+    },
+
+    // ======= removeLessonItems =======
+    removeLessonItems: function() {
+        console.log("removeLessonItems");
+        var lessonItems = $('#lessonMenu').remove();
+    },
+
+    // ======= removeGridItems =======
+    removeGridItems: function(menu) {
+        console.log("removeGridItems");
+        var gridItems = $('.grid_item').remove();
+    },
+
     // ======= toggleHoverText =======
     toggleHoverText: function(item, itemType) {
         // console.log("toggleHoverText');
@@ -522,7 +606,9 @@ var clientApp = {
             } else if (itemType == "lesson") {
                 var itemText = clientApp.lessons[$(item).attr('id')].itemText;
             } else if (itemType == "actor") {
-                var itemText = clientApp.activeActor.actorText;
+                var itemText = clientApp.actors[$(item).attr('id')].actorText;
+            } else {
+                var itemText = $(item).attr('id');
             }
             $('#hover_text').text(itemText);
         } else {

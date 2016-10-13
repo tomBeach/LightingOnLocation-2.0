@@ -7,7 +7,7 @@ var defaultLesson = {
     lessonIndex: 0,
     lessonTitle: "lessonTitle",
     lessonSubtitle: "lessonSubtitle",
-    lessonPages: []
+    pageKeys: []
 }
 
 function initLessons() {
@@ -21,7 +21,7 @@ function initLessons() {
         /* lessonIndex */ 0,
         /* lessonTitle */ "Intro to Lighting",
         /* lessonSubtitle */ "qualtity, quality, color position",
-        /* lessonPages */ [clientApp.pages.page_0_0, clientApp.pages.page_0_1]
+        /* pageKeys */ ["0_0", "0_1", "0_2", "0_3", "0_4"]
 	);
     lessons.lesson_1 = new Lesson ( 1, "Intensity", "lights and brightness" );
     lessons.lesson_2 = new Lesson ( 2, "Qualtity", "soft or hard" );
@@ -34,10 +34,10 @@ function initLessons() {
     return lessons;
 }
 
-function Lesson (lessonIndex, lessonTitle, lessonSubtitle, lessonPages) {
+function Lesson (lessonIndex, lessonTitle, lessonSubtitle, pageKeys) {
     // console.log(' Lesson');
     this.lessonIndex = lessonIndex;
     this.lessonTitle = lessonTitle;
     this.lessonSubtitle = lessonSubtitle;
-    this.lessonPages = lessonPages;
+    this.pageKeys = pageKeys;
 }

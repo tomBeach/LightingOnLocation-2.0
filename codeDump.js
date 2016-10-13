@@ -1,4 +1,129 @@
 
+
+// ======= getNextPage =======
+function getNextPage(prevOrNext) {
+    console.log("getNextPage");
+    console.log("prevOrNext:", prevOrNext);
+
+    // == remove event listeners
+    $('#navPanel').children('div').off();
+
+    // == loop throuhg pages of active lesson
+    for (var i = 0; i < clientApp.activeLesson.pageKeys.length; i++) {
+        var lessonIndex = clientApp.activeLesson.pageKeys[i].split("_")[0];
+        var pageIndex = clientApp.activeLesson.pageKeys[i].split("_")[1];
+        console.log("  *** lessonIndex:", lessonIndex);
+        console.log("  pageIndex:", pageIndex);
+
+        // == current page found
+        if (pageIndex == clientApp.activePage.pageKey.split("_")[1]) {
+            if (prevOrNext == "nextBtn") {
+                // == load next page in same lesson
+                if (pageIndex < clientApp.activeLesson.pageKeys.length - 1) {
+                    var nextPageIndex = i + 1;
+                    console.log("  nextPageIndex:", nextPageIndex);
+                    return clientApp.pages["page_" + lessonIndex + "_" + nextPageIndex];
+
+                // == load first page in next lesson
+                } else {
+                    lessonIndex++;
+                    console.log("  lessonIndex:", lessonIndex);
+                    clientApp.activeLesson = clientApp.lessons["lesson_" + lessonIndex];
+                    return clientApp.pages["page_" + lessonIndex + "_" + 0];
+                }
+            } else {
+                // == load prev page in same lesson
+                if (pageIndex > clientApp.activeLesson.pageKeys[0].split("_")[1]) {
+                    var nextPageIndex = i - 1;
+                    console.log("  nextPageIndex:", nextPageIndex);
+                    return clientApp.pages["page_" + lessonIndex + "_" + nextPageIndex];
+
+                // == load last page in prev lesson
+                } else {
+                    lessonIndex--;
+                    console.log("  lessonIndex:", lessonIndex);
+                    clientApp.activeLesson = clientApp.lessons["lesson_" + lessonIndex];
+                    return clientApp.pages["page_" + lessonIndex + "_" + clientApp.lessons["lesson_" + lessonIndex].pageKeys.length];
+                }
+            }
+
+        }
+    }
+}
+
+
+
+
+
+// ======= makeLessonText =======
+makeLessonText: function(lesson) {
+    console.log("makeLessonText");
+
+    // == get selected lesson elements
+    var navPanel = "";
+    var lessonText = clientApp.activePage.pageText;
+    var lessonId = $(lesson).attr('id');
+    var lessonHtml = $(lesson).parents().eq(0).html();
+    var lessonBox = $('#' + lessonId).parents().eq(2);
+    console.log("lessonId:", lessonId);
+
+    // == get all lesson elements
+    // var lessonItems = $('.lessonItem:gt(1)');
+    // var lessonItems = $('.lessonItem');
+    // var index = $(lessonItems).index(lesson);
+
+    // == replace prev text or lesson menu with next lesson text
+    $('#' + lessonId).parents().eq(1).remove();
+
+    // == replace lessons list with lesson text
+    var lessonTextHtml = "<div class='lessonText hide'><p>" + lessonText + "</p></div>";
+    $(lessonBox).append(lessonTextHtml);
+    $( ".lessonText" ).animate({
+        height: "200px",
+        opacity: 1.0
+    }, 500, function() {
+        console.log("done");
+    });
+
+    if (clientApp.activePage.pageKey.split('_')[1] == 0) {
+
+        // == make prevNext openClose buttons
+        navPanel += "<nav id='navPanel'><div id='prevBtn' class='panelBtn'><span>P</span></div>";
+        navPanel += "<div id='nextBtn' class='panelBtn'><span>N</span></div></nav>";
+
+        // == change container class for prevNext buttons
+        $('#' + lessonId).removeClass('lessonItem');
+        $('#' + lessonId).addClass('selectedLesson');
+        $(lessonBox).append(navPanel);
+        $(lessonBox).append(lessonHtml);
+
+        this.activatePrevNext();
+    }
+},
+
+
+
+//     append menuHtml
+//     style buttons
+//     activate buttons
+//
+// // == slide next lessons
+//     lesson collection
+//     style lessons
+//     set lesson position
+//
+// // == load selected lesson text
+//     selectedLesson.lessonText
+//     build menuHtml
+//     style lessonText
+//     append menuHtml
+//
+// // == lesson text links
+//     link to lesson/page
+
+
+
+
 loadNextImage(null, 0);
 
 // ======= loadNextImage =======
