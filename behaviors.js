@@ -4,54 +4,54 @@
 // ======= ======= ======= BEHAVIORS ======= ======= =======
 
 // ======= initDrag =======
-Actor.prototype.initDrag = function(e) {
+Item.prototype.initDrag = function(e) {
     console.log("initDrag");
 
-    // == get active actor element
-    var actor = clientApp.activeActor;
-    actor.actorEl = $("#" + actor.actorId).eq(0);
+    // == get active item element
+    var item = clientApp.activeActor;
+    item.itemEl = $("#" + item.itemId).eq(0);
 
     // == strip "px" suffix from left and top properties
-    var locL = parseInt($(actor.actorEl).css('left').substring(0, $(actor.actorEl).css('left').length - 2));
-    var locT = parseInt($(actor.actorEl).css('top').substring(0, $(actor.actorEl).css('top').length - 2));
+    var locL = parseInt($(item.itemEl).css('left').substring(0, $(item.itemEl).css('left').length - 2));
+    var locT = parseInt($(item.itemEl).css('top').substring(0, $(item.itemEl).css('top').length - 2));
     console.log("locL:", locL);
     console.log("locT:", locT);
 
-    // == set actor/mouse locations and actor offsets (pixels relative to window)
-    actor.startXY.actorL = locL;
-    actor.startXY.actorT = locT;
-    actor.startXY.mouseX = e.clientX;
-    actor.startXY.mouseY = e.clientY;
-    actor.startXY.diffX = e.clientX - locL;
-    actor.startXY.diffY = e.clientY - locT;
+    // == set item/mouse locations and item offsets (pixels relative to window)
+    item.startXY.itemL = locL;
+    item.startXY.itemT = locT;
+    item.startXY.mouseX = e.clientX;
+    item.startXY.mouseY = e.clientY;
+    item.startXY.diffX = e.clientX - locL;
+    item.startXY.diffY = e.clientY - locT;
 
-    if (actor.actorType == "dragger") {
-        window.addEventListener('mousemove', actor.draggerMove, true);
-    } else if (actor.actorType == "slider") {
-        window.addEventListener('mousemove', actor.sliderMove, true);
+    if (item.itemMove == "dragger") {
+        window.addEventListener('mousemove', item.draggerMove, true);
+    } else if (item.itemMove == "slider") {
+        window.addEventListener('mousemove', item.sliderMove, true);
     }
-    window.addEventListener('mouseup', actor.mouseUp, true);
+    window.addEventListener('mouseup', item.mouseUp, true);
 }
 
 /// ======= sliderMove =======
-Actor.prototype.sliderMove = function(e) {
+Item.prototype.sliderMove = function(e) {
     // console.log("sliderMove");
 
-    var actor = clientApp.activeActor;
+    var item = clientApp.activeActor;
 
     // == get movement boundaries (relative to canvas; add canvas offsets)
-    var minX = actor.locator.L + displayItems.studio.canX;
-    var maxX = actor.locator.L + actor.locator.W + displayItems.studio.canX;
-    var minY = actor.locator.T + displayItems.studio.canY;
-    var maxY = actor.locator.T + actor.locator.H + displayItems.studio.canY;
+    var minX = item.locator.L + displayItems.studio.canX;
+    var maxX = item.locator.L + item.locator.W + displayItems.studio.canX;
+    var minY = item.locator.T + displayItems.studio.canY;
+    var maxY = item.locator.T + item.locator.H + displayItems.studio.canY;
 
     // == calculate change in mouse X/Y location in pixels
-    var dX = parseInt(e.clientX - actor.startXY.mouseX);
-    var dY = parseInt(e.clientY - actor.startXY.mouseY);
-    var deltaX = ((dX + actor.dropLoc.L)/actor.locator.W).toFixed(2);
-    var deltaY = ((dY + actor.dropLoc.T)/actor.locator.H).toFixed(2);
-    var left = parseInt(actor.startXY.actorL + dX);
-    var top = parseInt(actor.startXY.actorT - actor.dropLoc.T - (actor.locator.H * deltaX));
+    var dX = parseInt(e.clientX - item.startXY.mouseX);
+    var dY = parseInt(e.clientY - item.startXY.mouseY);
+    var deltaX = ((dX + item.dropLoc.L)/item.locator.W).toFixed(2);
+    var deltaY = ((dY + item.dropLoc.T)/item.locator.H).toFixed(2);
+    var left = parseInt(item.startXY.itemL + dX);
+    var top = parseInt(item.startXY.itemT - item.dropLoc.T - (item.locator.H * deltaX));
 
     // == set movement boundaries
     if (left < minX) {
@@ -76,49 +76,49 @@ Actor.prototype.sliderMove = function(e) {
         indexX = clientApp.activePage.studio.endFrame;
     }
 
-    // == set real-time actor loc and canvas frame based on slider position
-    $(clientApp.activeActor.actorEl).css('top', top + 'px');
-    $(clientApp.activeActor.actorEl).css('left', left + 'px');
-    actor.startXY.dragL = left;
-    actor.startXY.dragT = top;
+    // == set real-time item loc and canvas frame based on slider position
+    $(clientApp.activeActor.itemEl).css('top', top + 'px');
+    $(clientApp.activeActor.itemEl).css('left', left + 'px');
+    item.startXY.dragL = left;
+    item.startXY.dragT = top;
     clientApp.updateCanvas(left, top, indexX);
 }
 
 // ======= mouseUp =======
-Actor.prototype.mouseUp = function(e) {
+Item.prototype.mouseUp = function(e) {
     console.log("mouseUp");
-    var actor = clientApp.activeActor;
-    if (actor.actorType == "dragger") {
-        $(clientApp.activeActor.actorEl).off();
-        window.removeEventListener('mousemove', actor.draggerMove, true);
-    } else if (actor.actorType == "slider") {
-        $(clientApp.activeActor.actorEl).off();
-        window.removeEventListener('mousemove', actor.sliderMove, true);
+    var item = clientApp.activeActor;
+    if (item.itemMove == "dragger") {
+        $(clientApp.activeActor.itemEl).off();
+        window.removeEventListener('mousemove', item.draggerMove, true);
+    } else if (item.itemMove == "slider") {
+        $(clientApp.activeActor.itemEl).off();
+        window.removeEventListener('mousemove', item.sliderMove, true);
     }
 
-    // == store relative loc where actor was dropped
-    actor.dropLoc.L = actor.startXY.dragL - (clientApp.displayItems.studio.canX + actor.locator.L + actor.locator.W);
-    actor.dropLoc.T = actor.startXY.dragT - (clientApp.displayItems.studio.canY + actor.locator.T);
-    actor.dropLoc.W = null;
-    actor.dropLoc.H = null;
-    console.log("\n******* dropLoc:", actor.dropLoc.L, actor.dropLoc.T);
+    // == store relative loc where item was dropped
+    item.dropLoc.L = item.startXY.dragL - (clientApp.displayItems.studio.canX + item.locator.L + item.locator.W);
+    item.dropLoc.T = item.startXY.dragT - (clientApp.displayItems.studio.canY + item.locator.T);
+    item.dropLoc.W = null;
+    item.dropLoc.H = null;
+    console.log("\n******* dropLoc:", item.dropLoc.L, item.dropLoc.T);
 
-    // == reactivate actor
-    clientApp.activateLessonActors();
+    // == reactivate item
+    clientApp.activateLessonItems();
 }
 
 // ======= draggerMove =======
-// Actor.prototype.draggerMove = function(e) {
+// Item.prototype.draggerMove = function(e) {
 //     // console.log("draggerMove");
-//     var actor = clientApp.activeActor;
-//     var dX = actor.startXY.mouseX - e.clientX;
-//     var dY = actor.startXY.mouseY - e.clientY;
-//     var left = actor.startXY.actorL - dX;
-//     var top = actor.startXY.actorT - dY;
-//     var minX = actor.locator.L;
-//     var maxX = actor.locator.R;
-//     var minY = actor.locator.T;
-//     var maxY = actor.locator.B;
+//     var item = clientApp.activeActor;
+//     var dX = item.startXY.mouseX - e.clientX;
+//     var dY = item.startXY.mouseY - e.clientY;
+//     var left = item.startXY.itemL - dX;
+//     var top = item.startXY.itemT - dY;
+//     var minX = item.locator.L;
+//     var maxX = item.locator.R;
+//     var minY = item.locator.T;
+//     var maxY = item.locator.B;
 //     if (left < minX) {
 //         left = minX;
 //     }
@@ -131,8 +131,8 @@ Actor.prototype.mouseUp = function(e) {
 //     if (top > maxY) {
 //         top = maxY;
 //     }
-//     $(clientApp.activeActor.actorEl).css('top', top + 'px');
-//     $(clientApp.activeActor.actorEl).css('left', left + 'px');
+//     $(clientApp.activeActor.itemEl).css('top', top + 'px');
+//     $(clientApp.activeActor.itemEl).css('left', left + 'px');
 //
 //     // == set canvas frame based on slider position
 //     clientApp.updateCanvas(left, top, indexX);

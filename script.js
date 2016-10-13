@@ -33,8 +33,8 @@ var clientApp = {
     // ======= initialize =======
     initialize: function() {
         console.log("initialize");
-        this.actors = initActors();
-        this.pages = initPages(this.actors);
+        this.items = initItems();
+        this.pages = initPages(this.items);
         this.lessons = initLessons();
         this.activePage = this.pages.page_0_0;
         this.activeLesson = this.lessons.lesson_0;
@@ -51,9 +51,10 @@ var clientApp = {
 
         this.initLessonCanvases();
         this.clearLessonCanvases();
+        this.removeActorsGuides();
         this.makeLessonCanvases();
-        this.makeLessonActors();
-        this.activateLessonActors();
+        this.makeLessonItems();
+        this.activateLessonItems();
         if (lessonEl.className == "panelBtn") {
             this.updateLessonText();
         } else {
@@ -174,62 +175,154 @@ var clientApp = {
         }
     },
 
-    // ======= makeLessonActors =======
-    makeLessonActors: function() {
-        console.log("makeLessonActors");
+    // ======= makeLessonItems =======
+    makeLessonItems: function() {
+        console.log("makeLessonItems");
 
-        if (this.activePage.ActorItems.length > 0) {
-            var actor, urlString, newDiv;
-            for (var i = 0; i < this.activePage.ActorItems.length; i++) {
-                actor = this.activePage.ActorItems[i];
-                urlString = "url('images/" + this.activePage.ActorItems[i].actorImage + ".png') 0 0";
+        var setups = this.activePage.SetupItems;
+        var groups = this.activePage.GroupItems;
+        var menus = this.activePage.MenuItems;
+        var actors = this.activePage.ActorItems;
+        var targets = this.activePage.TargetItems;
+        var guides = this.activePage.guides;
+        console.log("setups:", setups);
+        console.log("actors:", actors);
+
+        var lessonItemsArray = [setups, groups, menus, actors, targets];
+
+        for (var i = 0; i < lessonItemsArray.length; i++) {
+            if ((lessonItemsArray[i]) && (lessonItemsArray[i].length > 0)) {
+                makeItemEls(lessonItemsArray[i]);
+                if (guides.length > 0) {
+                    this.makeItemGuides(lessonItemsArray[i]);
+                }
+            }
+        }
+
+        // ======= makeItemEls =======
+        function makeItemEls(items) {
+            console.log("makeItemEls");
+            console.log("items:", items);
+            var item, itemType, urlString, newDiv;
+            for (var i = 0; i < items.length; i++) {
+                item = items[i];
+                itemType = items[i].itemType;
+                console.log("itemType:", itemType);
+
+                switch(itemType) {
+                    case "menu":
+                    newDiv = makeItemHtml(items[i]);
+                    locateGridItems(items[i], newDiv);
+                    break;
+                    case "actor":
+                    newDiv = makeItemHtml(items[i]);
+                    locateNewActor(items[i], newDiv);
+                    break;
+                    case "setup":
+                    newDiv = makeItemHtml(items[i]);
+                    locateNewSetup(items[i], newDiv);
+                    break;
+                }
+            }
+
+            // ======= locateGridItems =======
+            function locateGridItems(item, newDiv) {
+                console.log("locateGridItems");
+                newDiv.style.left = item.initLoc.L + displayItems.studio.canX + 'px';
+                newDiv.style.top = item.initLoc.T + displayItems.studio.canY + 'px';
+                newDiv.style.width = item.initLoc.W + 'px';
+                newDiv.style.height = item.initLoc.H + 'px';
+                $('#setup').append(newDiv);
+            }
+
+            // ======= locateNewSetup =======
+            function locateNewSetup(item, newDiv) {
+                console.log("locateNewSetup");
+                newDiv.style.left = item.initLoc.L + displayItems.studio.canX + 'px';
+                newDiv.style.top = item.initLoc.T + displayItems.studio.canY + 'px';
+                newDiv.style.width = item.initLoc.W + 'px';
+                newDiv.style.height = item.initLoc.H + 'px';
+                $('#setup').append(newDiv);
+            }
+
+            // ======= locateNewActor =======
+            function locateNewActor(item, newDiv) {
+                console.log("locateNewActor");
+                newDiv.style.left = item.initLoc.L + displayItems.studio.canX + 'px';
+                newDiv.style.top = item.initLoc.T + displayItems.studio.canY + 'px';
+                newDiv.style.width = item.initLoc.W + 'px';
+                newDiv.style.height = item.initLoc.H + 'px';
+                $('#actors').append(newDiv);
+            }
+
+            // ======= makeItemHtml =======
+            function makeItemHtml(item) {
+                console.log("makeItemHtml");
+                urlString = "url('images/" + item.itemImage + ".png') 0 0";
                 newDiv = document.createElement('div');
-                newDiv.id = this.activePage.ActorItems[i].actorId;
-                newDiv.classList.add(this.activePage.ActorItems[i].actorType);
-                newDiv.style.left = this.activePage.ActorItems[i].initLoc.L + displayItems.studio.canX + 'px';
-                newDiv.style.top = this.activePage.ActorItems[i].initLoc.T + displayItems.studio.canY + 'px';
-                newDiv.style.width = this.activePage.ActorItems[i].initLoc.W + 'px';
-                newDiv.style.height = this.activePage.ActorItems[i].initLoc.H + 'px';
+                newDiv.id = item.itemId;
+                newDiv.classList.add(item.itemType);
                 newDiv.style.position = "absolute";
                 newDiv.style.zIndex = 2;
                 newDiv.style.background = urlString;
-                newDiv.style.backgroundSize =  this.activePage.ActorItems[i].initLoc.W + 'px ' + this.activePage.ActorItems[i].initLoc.H + 'px';
-                $('#actors').append(newDiv);
-
-                this.makeActorGuides(actor);
+                newDiv.style.backgroundSize =  item.initLoc.W + 'px ' + item.initLoc.H + 'px';
+                return newDiv;
             }
         }
     },
 
-    // ======= makeActorGuides =======
-    makeActorGuides: function(actor) {
-        console.log("makeActorGuides");
+    // ======= makeItemGuides =======
+    makeItemGuides: function(items) {
+        console.log("makeItemGuides");
+        console.log("items:", items);
 
-        // == make svg guide elements
-        var guidesEl = document.getElementById("guides");
-        guidesEl.style.position = "absolute";
-        guidesEl.style.left = (actor.locator.L + displayItems.studio.canX) + 'px';
-        guidesEl.style.top = (actor.locator.T + displayItems.studio.canY + 30) + 'px';
-        guidesEl.style.width = actor.locator.W + 'px';
-        guidesEl.style.height = actor.locator.H + 'px';
-        guidesEl.style.zIndex = 1;
+        var item, itemId;
+        var guides = this.activePage.guides;
 
-        var data = [[0, actor.locator.H], [actor.locator.W, 0]];
-        var line = d3.line(data);
-        var lineGenerator = d3.line();
-        var pathString = lineGenerator(data);
+        for (var i = 0; i < items.length; i++) {
+            item = items[i];
+            itemId = items[i].itemId;
+            console.log("itemId:", itemId);
 
-        // == make svg line element
-        var svgEl = d3.select(guidesEl)
-            .append("svg")
-                .attr("width", actor.locator.W)
-                .attr("height", actor.locator.H);
-        svgEl.append("path");
-        d3.select('path')
-        	.attr('d', pathString)
-            .style("stroke", "red")
-            .style("stroke-weight", "2")
-            .style("fill", "none");
+            for (var i = 0; i < guides.length; i++) {
+                var guideId = guides[i].itemId;
+                console.log("guideId:", guideId);
+                if (guideId == itemId) {
+                    makeItemGuide(item);
+                }
+            }
+
+            // ======= makeItemGuide =======
+            function makeItemGuide(item) {
+                console.log("makeItemGuide");
+
+                // == make svg guide elements
+                var guidesEl = document.getElementById("guides");
+                guidesEl.style.position = "absolute";
+                guidesEl.style.left = (item.locator.L + displayItems.studio.canX) + 'px';
+                guidesEl.style.top = (item.locator.T + displayItems.studio.canY + 30) + 'px';
+                guidesEl.style.width = item.locator.W + 'px';
+                guidesEl.style.height = item.locator.H + 'px';
+                guidesEl.style.zIndex = 1;
+
+                var data = [[0, item.locator.H], [item.locator.W, 0]];
+                var line = d3.line(data);
+                var lineGenerator = d3.line();
+                var pathString = lineGenerator(data);
+
+                // == make svg line element
+                var svgEl = d3.select(guidesEl)
+                    .append("svg")
+                        .attr("width", item.locator.W)
+                        .attr("height", item.locator.H);
+                svgEl.append("path");
+                d3.select('path')
+                	.attr('d', pathString)
+                    .style("stroke", "red")
+                    .style("stroke-weight", "2")
+                    .style("fill", "none");
+            }
+        }
     },
 
     // ======= makeLessonMenu =======
@@ -274,12 +367,37 @@ var clientApp = {
     // ======= updateLessonText =======
     updateLessonText: function(errorText) {
         console.log("updateLessonText");
-        console.log("errorText: ", errorText);
-        console.log("$('#lessonText').length:", $('#lessonText').length);
 
+        // == no page found... display msg
         if (errorText) {
-            var lessonBox = $('#shopLesson_display');
             var lessonText = errorText;
+        } else {
+            var lessonText = clientApp.activePage.pageText;
+        }
+
+        // == update title/subtile
+        $('.menu_title_active').text(clientApp.activeLesson.lessonIndex + " - " + clientApp.activeLesson.lessonTitle);
+        $('.menu_text_active').text(clientApp.activeLesson.lessonSubtitle);
+
+        if ($('#lessonText').length > 0) {
+            $('#lessonText').animate({
+                height: 0,
+                opacity: 0
+            }, 500, function() {
+                console.log("collapsed");
+                // == replace prev lesson text with new text
+                $('#lessonText').children('p').html(lessonText);
+                $('#lessonText').animate({
+                    height: "200px",
+                    opacity: 1.0
+                }, 500, function() {
+                    console.log("expanded");
+                });
+            });
+        } else {
+
+            // == replace lessons list with lesson text
+            var lessonBox = $('#shopLesson_display');
             var lessonTextHtml = "<div id='lessonText' class='hide'><p>" + lessonText + "</p></div>";
             $(lessonBox).append(lessonTextHtml);
             $('#lessonText').removeClass('hide');
@@ -287,41 +405,8 @@ var clientApp = {
                 height: "200px",
                 opacity: 1.0
             }, 500, function() {
-                console.log("done");
+                console.log("expanded");
             });
-        } else {
-            if ($('#lessonText').length > 0) {
-                $('#lessonText').animate({
-                    height: 0,
-                    opacity: 0
-                }, 500, function() {
-                    console.log("done");
-                    // == replace prev lesson text with new text
-                    console.log("clientApp.activePage.pageText:", clientApp.activePage.pageText);
-                    $('#lessonText').children('p').html(clientApp.activePage.pageText);
-                    $('#lessonText').animate({
-                        height: "200px",
-                        opacity: 1.0
-                    }, 500, function() {
-                        console.log("done");
-                    });
-                });
-            } else {
-
-                // == replace lessons list with lesson text
-                console.log("clientApp.activePage.pageText:", clientApp.activePage.pageText);
-                var lessonBox = $('#shopLesson_display');
-                var lessonText = clientApp.activePage.pageText;
-                var lessonTextHtml = "<div id='lessonText' class='hide'><p>" + lessonText + "</p></div>";
-                $(lessonBox).append(lessonTextHtml);
-                $('#lessonText').removeClass('hide');
-                $('#lessonText').animate({
-                    height: "200px",
-                    opacity: 1.0
-                }, 500, function() {
-                    console.log("done");
-                });
-            }
         }
     },
 
@@ -335,8 +420,6 @@ var clientApp = {
         var lessonId = $(lessonEl).attr('id');
         var lessonBox = $('#shopLesson_display');
         var lessonHtml = $(lessonEl).parents().eq(0).html();
-        console.log("lessonId:", lessonId);
-        console.log("lessonBox:", lessonBox);
 
         // == make prevNext openClose buttons
         navPanel += "<nav id='navPanel'><div id='prevBtn' class='panelBtn'><span>P</span></div>";
@@ -405,25 +488,26 @@ var clientApp = {
 // ======= ======= ======= ACTIVATORS ======= ======= =======
 // ======= ======= ======= ACTIVATORS ======= ======= =======
 
-    // ======= activateLessonActors =======
-    activateLessonActors: function() {
-        console.log("activateLessonActors");
+    // ======= activateLessonItems =======
+    activateLessonItems: function() {
+        console.log("activateLessonItems");
 
         if (this.activePage.ActorItems.length > 0) {
             for (var i = 0; i < this.activePage.ActorItems.length; i++) {
-                $('#' + this.activePage.ActorItems[i].actorId).on('mousedown', function(e) {
+                $('#' + this.activePage.ActorItems[i].itemId).on('mousedown', function(e) {
                     console.log("\nmousedown");
-                    var actor = clientApp.actors[$(e.currentTarget).attr('id')];
+                    console.log("clientApp.items:", clientApp.items);
+                    var actor = clientApp.items[$(e.currentTarget).attr('id')];
                     var dragger = $(e.currentTarget);
                     e.preventDefault();
                     clientApp.activeActor = actor;
                     actor.initDrag(e, dragger, actor);
                 });
-                $('#' + this.activePage.ActorItems[i].actorId).on('mouseenter', function(e) {
+                $('#' + this.activePage.ActorItems[i].itemId).on('mouseenter', function(e) {
                     // console.log("\nmouseenter");
                     clientApp.toggleHoverText(e.currentTarget, "actor");
                 });
-                $('#' + this.activePage.ActorItems[i].actorId).on('mouseleave', function(e) {
+                $('#' + this.activePage.ActorItems[i].itemId).on('mouseleave', function(e) {
                     // console.log("\nmouseleave");
                     clientApp.toggleHoverText(null, null);
                 });
@@ -473,8 +557,6 @@ var clientApp = {
                 console.log("\n-- click LESSON menu");
                 clientApp.activeLesson = clientApp.lessons[e.currentTarget.id];
                 clientApp.activePage = clientApp.pages["page_" + clientApp.lessons[e.currentTarget.id].lessonIndex + "_" + "0"];
-                console.log("activeLesson:", clientApp.activeLesson.lessonIndex);
-                console.log("activePage:", clientApp.activePage.pageKey);
                 clientApp.makeLessonPage(e.currentTarget);
                 e.stopPropagation();
             });
@@ -538,8 +620,8 @@ var clientApp = {
 
         // == loop through pages of active lesson
         for (var i = 0; i < pageCount; i++) {
-            var checkLessonIndex = clientApp.activeLesson.pageKeys[i].split("_")[0];
-            var checkPageIndex = clientApp.activeLesson.pageKeys[i].split("_")[1];
+            var checkLessonIndex = parseInt(clientApp.activeLesson.pageKeys[i].split("_")[0]);
+            var checkPageIndex = parseInt(clientApp.activeLesson.pageKeys[i].split("_")[1]);
 
             // == current page found
             if ((lessonIndex == checkLessonIndex) && (pageIndex == checkPageIndex)) {
@@ -556,10 +638,14 @@ var clientApp = {
                     }
                 } else if (prevOrNext == "prevBtn") {
                     var nextPageIndex = parseInt(pageIndex - 1);
+                    console.log("nextPageIndex:", nextPageIndex);
                     if (nextPageIndex < 0) {
                         var nextLessonIndex = parseInt(lessonIndex - 1);
+                        console.log("nextLessonIndex:", nextLessonIndex);
                         if (nextLessonIndex >= 0) {
-                            var nextPageIndex = clientApp.lessons["lesson_ " + nextLessonIndex].pageKeys.length - 1;
+                            var lessonName = "lesson_" + nextLessonIndex;
+                            console.log("lessonName:", lessonName);
+                            var nextPageIndex = parseInt(clientApp.lessons[lessonName].pageKeys.length - 1);
                         } else {
                             var nextLessonIndex = 0;
                         }
@@ -606,6 +692,13 @@ var clientApp = {
         }
     },
 
+    // ======= removeActorsGuides =======
+    removeActorsGuides: function() {
+        console.log("removeActorsGuides");
+        var actors = $('#actors').empty();
+        var guides = $('#guides').empty();
+    },
+
     // ======= removeLessonItems =======
     removeLessonItems: function() {
         console.log("removeLessonItems");
@@ -627,7 +720,7 @@ var clientApp = {
             } else if (itemType == "lesson") {
                 var itemText = clientApp.lessons[$(item).attr('id')].itemText;
             } else if (itemType == "actor") {
-                var itemText = clientApp.actors[$(item).attr('id')].actorText;
+                var itemText = clientApp.items[$(item).attr('id')].itemText;
             } else {
                 var itemText = $(item).attr('id');
             }

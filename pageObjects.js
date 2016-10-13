@@ -18,28 +18,31 @@ function initPages(Actor_Data) {
         /* MenuItems */ [],
         /* ActorItems */ [],
         /* TargetItems */ [],
+        /* guides */ [],
         /* studio */ { text:null, image:null, startFrame:0, endFrame:6, initFrame:0 },
         /* monitor */ { text:null, image:null, startFrame:0, endFrame:6, initFrame:0 }
 	);
 	pages.page_0_1 = new Page (
         /* pageKey */ "0_1",
-        /* pageText */ "The first thing to know is intensity: how bright the light is.  There are many ways to control intensity.  Number 1: distance.  The closer your light is to the subject, the brighter it is.  DSrag the light icon to see how brightness changes with distance.  What else happens as you move the light in and out?",
+        /* pageText */ "The first thing to know is intensity: how bright the light is.  There are many ways to control intensity.  Number 1: distance.  The closer your light is to the subject, the brighter it is.  Drag the light icon to see how brightness changes with distance.  What else happens as you move the light in and out?",
         /* SetupItems */ [],
         /* GroupItems */ [],
         /* MenuItems */ [],
-        /* ActorItems */ [Actor_Data.slider_0_01],
+        /* ActorItems */ [Actor_Data.distance_0_1],
         /* TargetItems */ [],
+        /* guides */ [{ itemId:"distance_0_1", L:260, T:20, W:300, H:100 }],
         /* studio */ { text:null, image:"st_int_distance", startFrame:0, endFrame:6, initFrame:0 },
         /* monitor */ { text:null, image:"mn_int_distance", startFrame:0, endFrame:6, initFrame:0 }
 	);
     pages.page_0_2 = new Page (
         /* pageKey */ "0_2",
-        /* pageText */ "Ykzsgdf lzisuh lzsifg kzsjdgfl Skgf lSgf lsigf lisudgf liUSGf lIUSgf SUfg Siufh ",
-        /* SetupItems */ [],
+        /* pageText */ "Often, moving lights is not easy --  especially when its a 20k HMI lighting up a city block.  But f it's too bright you csn drop a scrim into barn door frame to cut it down a bit.  Click on the Storeroom tab to grab some scrims and add them to the light.  Easy!",
+        /* SetupItems */ [Actor_Data.f650_0_2],
         /* GroupItems */ [],
-        /* MenuItems */ [],
+        /* MenuItems */ [Actor_Data.scrim1_0],
         /* ActorItems */ [],
         /* TargetItems */ [],
+        /* guides */ [],
         /* studio */ { text:null, image:null, startFrame:0, endFrame:6, initFrame:0 },
         /* monitor */ { text:null, image:null, startFrame:0, endFrame:6, initFrame:0 }
 	);
@@ -49,15 +52,16 @@ function initPages(Actor_Data) {
         /* SetupItems */ [],
         /* GroupItems */ [],
         /* MenuItems */ [],
-        /* ActorItems */ [Actor_Data.slider_0_01],
+        /* ActorItems */ [],
         /* TargetItems */ [],
+        /* guides */ [],
         /* studio */ { text:null, image:"st_int_distance", startFrame:0, endFrame:6, initFrame:0 },
         /* monitor */ { text:null, image:"mn_int_distance", startFrame:0, endFrame:6, initFrame:0 }
 	);
     return pages;
 }
 
-function Page (pageKey, pageText, SetupItems, GroupItems, MenuItems, ActorItems, TargetItems, studio, monitor) {
+function Page (pageKey, pageText, SetupItems, GroupItems, MenuItems, ActorItems, TargetItems, guides, studio, monitor) {
     // console.log(' Page');
     this.pageKey = pageKey;
     this.pageText = pageText;
@@ -66,6 +70,7 @@ function Page (pageKey, pageText, SetupItems, GroupItems, MenuItems, ActorItems,
     this.MenuItems = MenuItems;
     this.ActorItems = ActorItems;
     this.TargetItems = TargetItems;
+    this.guides = guides;
     this.studio = studio;
     this.monitor = monitor;
 }
