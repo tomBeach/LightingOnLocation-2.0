@@ -11,7 +11,7 @@ function initItems() {
     items.scrim1_0 = new Item(
         /* itemId */ "scrim1_0",
         /* itemEl */ null,
-        /* itemName */ "scrims_650",
+        /* itemName */ "half stop",
         /* itemType */ "menu",
         /* itemMove */ "dragger",
         /* itemText */ "move scrims to the barndoor frame",
@@ -20,6 +20,32 @@ function initItems() {
         /* dropLoc */ { L:0, T:0, W:0, H:0 },
         /* initLoc */ { L:0, T:0, W:100, H:100 },
         /* locator */ { L:0, R:100, T:0, B:100 }
+    );
+    items.scrim2_0 = new Item(
+        /* itemId */ "scrim2_0",
+        /* itemEl */ null,
+        /* itemName */ "full stop",
+        /* itemType */ "menu",
+        /* itemMove */ "dragger",
+        /* itemText */ "move scrims to the barndoor frame",
+        /* itemImage */ "scrim2_0",
+        /* startXY */ { itemL:0, itemT:0, mouseX:0, mouseY:0, diffX:0, diffY:0, dragL:0, dragT:0 },
+        /* dropLoc */ { L:0, T:0, W:0, H:0 },
+        /* initLoc */ { L:0, T:0, W:100, H:100 },
+        /* locator */ { L:0, R:100, T:110, B:210 }
+    );
+    items.scrim3_0 = new Item(
+        /* itemId */ "scrim3_0",
+        /* itemEl */ null,
+        /* itemName */ "gradiated",
+        /* itemType */ "menu",
+        /* itemMove */ "dragger",
+        /* itemText */ "move scrims to the barndoor frame",
+        /* itemImage */ "scrim3_0",
+        /* startXY */ { itemL:0, itemT:0, mouseX:0, mouseY:0, diffX:0, diffY:0, dragL:0, dragT:0 },
+        /* dropLoc */ { L:0, T:0, W:0, H:0 },
+        /* initLoc */ { L:0, T:0, W:100, H:100 },
+        /* locator */ { L:0, R:100, T:320, B:420 }
     );
     items.f650_0_2 = new Item(
         /* itemId */ "f650_0_2",

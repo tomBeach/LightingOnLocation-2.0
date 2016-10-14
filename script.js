@@ -7,9 +7,8 @@
 // var Group_Data = {};
 // var Menu_Data = {};
 // var Target_Data = {};
-
 var displayItems = {
-    monitor: { itemName: "monitor", itemText: "Monitor", canvasName: "studioCanvas", can:null, ctx:null, canX:740, canY:10, canW:384, canH:180 },
+    monitor: { itemName: "monitor", itemText: "Monitor", canvasName: "studioCanvas", can:null, ctx:null, canX:740, canY:10, canW:384, canH:216 },
     studio: { itemName: "studio", itemText: "Studio View", canvaNames: "monitorCanvas", can:null, ctx:null, canX:10, canY:280, canW:720, canH:405 },
     shop: { itemName: "shop", itemText: "Shop Menu" },
     lessons: { itemName: "lessons", itemText: "Lesson Menu" },
@@ -76,6 +75,8 @@ var clientApp = {
                 var width = can.offsetWidth;
                 var height = can.offsetHeight;
                 var scaleFactor = backingScale(ctx);
+                console.log("width:", width);
+                console.log("height:", height);
 
                 // == detect retina display
                 if (scaleFactor > 1) {
@@ -187,6 +188,7 @@ var clientApp = {
         var guides = this.activePage.guides;
         console.log("setups:", setups);
         console.log("actors:", actors);
+        console.log("items:", items);
 
         if (items.length > 0) {
             var gridParams = getGridHW(items);
@@ -202,8 +204,16 @@ var clientApp = {
                 totalW += items[i].initLoc.W;
                 totalH += items[i].initLoc.H;
             }
+            var gridAvgH = totalH/items.length;
+            var gridAvgW = totalW/items.length;
+            var gridRows = 405/gridAvgH;
+            var gridCols = 405/gridAvgW;
             console.log("totalW:", totalW);
             console.log("totalH:", totalH);
+            console.log("gridAvgH:", gridAvgH);
+            console.log("gridAvgW:", gridAvgW);
+            console.log("gridRows:", gridRows);
+            console.log("gridCols:", gridCols);
             return gridParams;
         }
 
@@ -223,6 +233,9 @@ var clientApp = {
             console.log("makeItemEls");
             console.log("items:", items);
             var item, itemType, urlString, newDiv;
+            var locL = clientApp.displayItems.studio.canX + 10;
+            var locT = clientApp.displayItems.studio.canY + 10;
+
             for (var i = 0; i < items.length; i++) {
                 item = items[i];
                 itemType = items[i].itemType;
@@ -231,7 +244,9 @@ var clientApp = {
                 switch(itemType) {
                     case "menu":
                     newDiv = makeItemHtml(items[i]);
-                    locateGridItems(items[i], newDiv);
+                    $('#grid').css('left', locL + 'px');
+                    $('#grid').css('top', locT + 'px');
+                    locateGridItem(items[i], newDiv);
                     break;
                     case "actor":
                     newDiv = makeItemHtml(items[i]);
@@ -244,16 +259,23 @@ var clientApp = {
                 }
             }
 
-            // ======= locateGridItems =======
-            function locateGridItems(item, newDiv) {
-                console.log("locateGridItems");
+            // ======= locateGridItem =======
+            function locateGridItem(item, newDiv) {
+                console.log("locateGridItem");
 
-                newDiv.style.left = item.initLoc.L + displayItems.studio.canX + 'px';
-                newDiv.style.top = item.initLoc.T + displayItems.studio.canY + 'px';
+                newDiv.style.left = locL + 'px';
+                newDiv.style.top = locT + 'px';
                 newDiv.style.width = item.initLoc.W + 'px';
                 newDiv.style.height = item.initLoc.H + 'px';
-
                 $('#grid').append(newDiv);
+                if (locT < (locT + items[i].initLoc.H + 10)) {
+                    locT = locT + items[i].initLoc.H + 10;
+                } else {
+                    locT = clientApp.displayItems.studio.canY + 10;
+                    locL = clientApp.displayItems.studio.canX + items[i].initLoc.W + 10;
+                }
+                console.log("locL:", locL);
+                console.log("locT:", locT);
             }
 
             // ======= locateNewSetup =======

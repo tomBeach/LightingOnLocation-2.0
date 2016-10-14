@@ -39,7 +39,7 @@ function initPages(Actor_Data) {
         /* pageText */ "Often, moving lights is not easy --  especially when its a 20k HMI lighting up a city block.  But if it's too bright you can drop a scrim into the barn door frame and cut it down a bit.  Drag some scrims towards the light and drop them into the barndoor frame.  Easy!",
         /* SetupItems */ [Actor_Data.f650_0_2],
         /* GroupItems */ [],
-        /* MenuItems */ [Actor_Data.scrim1_0],
+        /* MenuItems */ [Actor_Data.scrim1_0, Actor_Data.scrim2_0, Actor_Data.scrim3_0],
         /* ActorItems */ [],
         /* TargetItems */ [],
         /* guides */ [],
