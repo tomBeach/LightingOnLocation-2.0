@@ -32,8 +32,9 @@ var clientApp = {
     // ======= initialize =======
     initialize: function() {
         console.log("initialize");
-        this.items = initItems();
-        this.pages = initPages(this.items);
+        this.targets = initTargets();
+        this.items = initItems(this.targets);
+        this.pages = initPages(this.items, this.targets);
         this.lessons = initLessons();
         this.activePage = this.pages.page_0_0;
         this.activeLesson = this.lessons.lesson_0;
@@ -190,33 +191,6 @@ var clientApp = {
         console.log("actors:", actors);
         console.log("items:", items);
 
-        if (items.length > 0) {
-            var gridParams = getGridHW(items);
-        }
-
-        // ======= getGridHW =======
-        function getGridHW(items) {
-            console.log("getGridHW");
-            var totalW = 0;
-            var totalH = 0;
-            var gridParams = { L:0, T:0, W:100, H:100 };
-            for (var i = 0; i < items.length; i++) {
-                totalW += items[i].initLoc.W;
-                totalH += items[i].initLoc.H;
-            }
-            var gridAvgH = totalH/items.length;
-            var gridAvgW = totalW/items.length;
-            var gridRows = 405/gridAvgH;
-            var gridCols = 405/gridAvgW;
-            console.log("totalW:", totalW);
-            console.log("totalH:", totalH);
-            console.log("gridAvgH:", gridAvgH);
-            console.log("gridAvgW:", gridAvgW);
-            console.log("gridRows:", gridRows);
-            console.log("gridCols:", gridCols);
-            return gridParams;
-        }
-
         var lessonItemsArray = [setups, groups, items, actors, targets];
 
         for (var i = 0; i < lessonItemsArray.length; i++) {
@@ -232,31 +206,52 @@ var clientApp = {
         function makeItemEls(items) {
             console.log("makeItemEls");
             console.log("items:", items);
-            var item, itemType, urlString, newDiv;
+            var item, itemType, urlString, newDiv, target;
             var locL = clientApp.displayItems.studio.canX + 10;
             var locT = clientApp.displayItems.studio.canY + 10;
 
             for (var i = 0; i < items.length; i++) {
                 item = items[i];
-                itemType = items[i].itemType;
+                itemType = item.itemType;
                 console.log("itemType:", itemType);
 
                 switch(itemType) {
-                    case "menu":
-                    newDiv = makeItemHtml(items[i]);
+                    case "grid":
+                    newDiv = makeItemHtml(item);
                     $('#grid').css('left', locL + 'px');
                     $('#grid').css('top', locT + 'px');
-                    locateGridItem(items[i], newDiv);
+                    locateGridItem(item, newDiv);
                     break;
                     case "actor":
-                    newDiv = makeItemHtml(items[i]);
-                    locateNewActor(items[i], newDiv);
+                    newDiv = makeItemHtml(item);
+                    locateNewActor(item, newDiv);
                     break;
                     case "setup":
-                    newDiv = makeItemHtml(items[i]);
-                    locateNewSetup(items[i], newDiv);
+                    newDiv = makeItemHtml(item);
+                    locateNewSetup(item, newDiv);
+                    if (item.itemTargets.length > 0) {
+                        for (var j = 0; j < item.itemTargets.length; j++) {
+                            target = item.itemTargets[j];
+                            console.log("target:", target);
+                            newDiv = makeTargetHtml(target);
+                            locateSetupTarget(target, item, newDiv);
+                        }
+                    }
                     break;
                 }
+            }
+
+            // ======= locateSetupTarget =======
+            function locateSetupTarget(target, item, newDiv) {
+                console.log("locateSetupTarget");
+                console.log("target:", target);
+                console.log("item:", item);
+                console.log("newDiv:", newDiv);
+                newDiv.style.left = item.initLoc.L + displayItems.studio.canX + target.initLoc.L + 'px';
+                newDiv.style.top = item.initLoc.T + displayItems.studio.canY + target.initLoc.T + 'px';
+                newDiv.style.width = target.initLoc.W + 'px';
+                newDiv.style.height = target.initLoc.H + 'px';
+                $('body').append(newDiv);
             }
 
             // ======= locateGridItem =======
@@ -267,6 +262,7 @@ var clientApp = {
                 newDiv.style.top = locT + 'px';
                 newDiv.style.width = item.initLoc.W + 'px';
                 newDiv.style.height = item.initLoc.H + 'px';
+                newDiv.style.zIndex = 4;
                 $('#grid').append(newDiv);
                 if (locT < (locT + items[i].initLoc.H + 10)) {
                     locT = locT + items[i].initLoc.H + 10;
@@ -278,16 +274,6 @@ var clientApp = {
                 console.log("locT:", locT);
             }
 
-            // ======= locateNewSetup =======
-            function locateNewSetup(item, newDiv) {
-                console.log("locateNewSetup");
-                newDiv.style.left = item.initLoc.L + displayItems.studio.canX + 'px';
-                newDiv.style.top = item.initLoc.T + displayItems.studio.canY + 'px';
-                newDiv.style.width = item.initLoc.W + 'px';
-                newDiv.style.height = item.initLoc.H + 'px';
-                $('#setup').append(newDiv);
-            }
-
             // ======= locateNewActor =======
             function locateNewActor(item, newDiv) {
                 console.log("locateNewActor");
@@ -295,20 +281,44 @@ var clientApp = {
                 newDiv.style.top = item.initLoc.T + displayItems.studio.canY + 'px';
                 newDiv.style.width = item.initLoc.W + 'px';
                 newDiv.style.height = item.initLoc.H + 'px';
+                newDiv.style.zIndex = 4;
                 $('#actors').append(newDiv);
+            }
+
+            // ======= makeTargetHtml =======
+            function makeTargetHtml(item) {
+                console.log("makeTargetHtml");
+                newDiv = document.createElement('div');
+                newDiv.id = item.itemId;
+                newDiv.classList.add(item.itemType);
+                newDiv.style.position = "absolute";
+                newDiv.style.zIndex = 3;
+                return newDiv;
+            }
+
+            // ======= locateNewSetup =======
+            function locateNewSetup(item, newDiv) {
+                console.log("locateNewSetup");
+                newDiv.style.left = item.initLoc.L + displayItems.studio.canX + 'px';
+                newDiv.style.top = item.initLoc.T + displayItems.studio.canY + 'px';
+                newDiv.style.width = item.initLoc.W + 'px';
+                newDiv.style.height = item.initLoc.H + 'px';
+                newDiv.style.zIndex = 2;
+                $('#setup').append(newDiv);
             }
 
             // ======= makeItemHtml =======
             function makeItemHtml(item) {
                 console.log("makeItemHtml");
-                urlString = "url('images/" + item.itemImage + ".png') 0 0";
                 newDiv = document.createElement('div');
                 newDiv.id = item.itemId;
                 newDiv.classList.add(item.itemType);
                 newDiv.style.position = "absolute";
-                newDiv.style.zIndex = 2;
-                newDiv.style.background = urlString;
-                newDiv.style.backgroundSize =  item.initLoc.W + 'px ' + item.initLoc.H + 'px';
+                if (item.itemImage) {
+                    urlString = "url('images/" + item.itemImage + ".png') 0 0";
+                    newDiv.style.background = urlString;
+                    newDiv.style.backgroundSize =  item.initLoc.W + 'px ' + item.initLoc.H + 'px';
+                }
                 return newDiv;
             }
         }
@@ -342,13 +352,13 @@ var clientApp = {
                 // == make svg guide elements
                 var guidesEl = document.getElementById("guides");
                 guidesEl.style.position = "absolute";
-                guidesEl.style.left = (item.locator.L + displayItems.studio.canX) + 'px';
-                guidesEl.style.top = (item.locator.T + displayItems.studio.canY + 30) + 'px';
-                guidesEl.style.width = item.locator.W + 'px';
-                guidesEl.style.height = item.locator.H + 'px';
+                guidesEl.style.left = (item.bounds.L + displayItems.studio.canX) + 'px';
+                guidesEl.style.top = (item.bounds.T + displayItems.studio.canY + 30) + 'px';
+                guidesEl.style.width = item.bounds.W + 'px';
+                guidesEl.style.height = item.bounds.H + 'px';
                 guidesEl.style.zIndex = 1;
 
-                var data = [[0, item.locator.H], [item.locator.W, 0]];
+                var data = [[0, item.bounds.H], [item.bounds.W, 0]];
                 var line = d3.line(data);
                 var lineGenerator = d3.line();
                 var pathString = lineGenerator(data);
@@ -356,8 +366,8 @@ var clientApp = {
                 // == make svg line element
                 var svgEl = d3.select(guidesEl)
                     .append("svg")
-                        .attr("width", item.locator.W)
-                        .attr("height", item.locator.H);
+                        .attr("width", item.bounds.W)
+                        .attr("height", item.bounds.H);
                 svgEl.append("path");
                 d3.select('path')
                 	.attr('d', pathString)
@@ -406,9 +416,9 @@ var clientApp = {
         return itemHtml;
     },
 
-    // ======= makeGridMenu =======
-    makeGridMenu: function(item) {
-        console.log("makeGridMenu");
+    // ======= makeMenuGrid =======
+    makeMenuGrid: function(item) {
+        console.log("makeMenuGrid");
         console.log("this.activeLesson:", this.activeLesson);
         menuHtml = clientApp.makeMenuItem(null, this.activeLesson, "grid");
         $('#shopLesson_display').html(menuHtml);
@@ -509,8 +519,8 @@ var clientApp = {
                 deselectItem("lessons");
                 selectItem(itemId);
                 this.removeLessonItems();
-                this.makeGridMenu();
-                this.activateGridItems("lessonMenu");
+                this.makeMenuGrid();
+                this.activateMenuGrid("lessonMenu");
                 break;
         }
 
@@ -542,22 +552,44 @@ var clientApp = {
     activateLessonItems: function() {
         console.log("activateLessonItems");
 
-        if (this.activePage.ActorItems.length > 0) {
-            for (var i = 0; i < this.activePage.ActorItems.length; i++) {
-                $('#' + this.activePage.ActorItems[i].itemId).on('mousedown', function(e) {
+        var setups = this.activePage.SetupItems;
+        var groups = this.activePage.GroupItems;
+        var items = this.activePage.MenuItems;
+        var actors = this.activePage.ActorItems;
+        var targets = this.activePage.TargetItems;
+        var guides = this.activePage.guides;
+        console.log("setups:", setups);
+        console.log("actors:", actors);
+        console.log("items:", items);
+        var lessonItemsArray = [setups, groups, items, actors, targets];
+
+        for (var i = 0; i < lessonItemsArray.length; i++) {
+            for (var i = 0; i < lessonItemsArray.length; i++) {
+                if ((lessonItemsArray[i]) && (lessonItemsArray[i].length > 0)) {
+                    activatePageItems(lessonItemsArray[i]);
+                }
+            }
+        }
+
+        // ======= activatePageItems =======
+        function activatePageItems(items) {
+            console.log("activatePageItems");
+
+            for (var i = 0; i < items.length; i++) {
+                $('#' + items[i].itemId).on('mousedown', function(e) {
                     console.log("\nmousedown");
                     console.log("clientApp.items:", clientApp.items);
                     var actor = clientApp.items[$(e.currentTarget).attr('id')];
-                    var dragger = $(e.currentTarget);
+                    var actorEl = $(e.currentTarget);
                     e.preventDefault();
                     clientApp.activeActor = actor;
-                    actor.initDrag(e, dragger, actor);
+                    actor.initMove(e, actorEl, actor);
                 });
-                $('#' + this.activePage.ActorItems[i].itemId).on('mouseenter', function(e) {
+                $('#' + items[i].itemId).on('mouseenter', function(e) {
                     // console.log("\nmouseenter");
                     clientApp.toggleHoverText(e.currentTarget, "actor");
                 });
-                $('#' + this.activePage.ActorItems[i].itemId).on('mouseleave', function(e) {
+                $('#' + items[i].itemId).on('mouseleave', function(e) {
                     // console.log("\nmouseleave");
                     clientApp.toggleHoverText(null, null);
                 });
@@ -565,9 +597,9 @@ var clientApp = {
         }
     },
 
-    // ======= activateGridItems =======
-    activateGridItems: function() {
-        console.log("activateGridItems");
+    // ======= activateMenuGrid =======
+    activateMenuGrid: function() {
+        console.log("activateMenuGrid");
     },
 
     // ======= activateDisplayItems =======

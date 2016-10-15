@@ -3,7 +3,7 @@
 // ======= ======= ======= ITEM OBJECTS ======= ======= =======
 // ======= ======= ======= ITEM OBJECTS ======= ======= =======
 
-function initItems() {
+function initItems(targets) {
     console.log("initItems");
 
     var items = {};
@@ -12,40 +12,46 @@ function initItems() {
         /* itemId */ "scrim1_0",
         /* itemEl */ null,
         /* itemName */ "half stop",
-        /* itemType */ "menu",
+        /* itemType */ "grid",
         /* itemMove */ "dragger",
         /* itemText */ "move scrims to the barndoor frame",
         /* itemImage */ "scrim1_0",
+        /* itemTargets */ [targets.barndoorFrame],
         /* startXY */ { itemL:0, itemT:0, mouseX:0, mouseY:0, diffX:0, diffY:0, dragL:0, dragT:0 },
+        /* minMaxLT */ { minL:0, minT:0, maxL:0, maxT:0 },
         /* dropLoc */ { L:0, T:0, W:0, H:0 },
         /* initLoc */ { L:0, T:0, W:100, H:100 },
-        /* locator */ { L:0, R:100, T:0, B:100 }
+        /* bounds */ { L:studioCanvas.canX, R:studioCanvas.canX + studioCanvas.canW, T:studioCanvas.canY, B:studioCanvas.canY + studioCanvas.canH }
     );
     items.scrim2_0 = new Item(
         /* itemId */ "scrim2_0",
         /* itemEl */ null,
         /* itemName */ "full stop",
-        /* itemType */ "menu",
+        /* itemType */ "grid",
         /* itemMove */ "dragger",
         /* itemText */ "move scrims to the barndoor frame",
         /* itemImage */ "scrim2_0",
+        /* itemTargets */ [targets.barndoorFrame],
         /* startXY */ { itemL:0, itemT:0, mouseX:0, mouseY:0, diffX:0, diffY:0, dragL:0, dragT:0 },
+        /* minMaxLT */ { minL:0, minT:0, maxL:0, maxT:0 },
         /* dropLoc */ { L:0, T:0, W:0, H:0 },
         /* initLoc */ { L:0, T:0, W:100, H:100 },
-        /* locator */ { L:0, R:100, T:110, B:210 }
+        /* bounds */ { L:studioCanvas.canX, R:studioCanvas.canX + studioCanvas.canW, T:studioCanvas.canY, B:studioCanvas.canY + studioCanvas.canH }
     );
     items.scrim3_0 = new Item(
         /* itemId */ "scrim3_0",
         /* itemEl */ null,
         /* itemName */ "gradiated",
-        /* itemType */ "menu",
+        /* itemType */ "grid",
         /* itemMove */ "dragger",
         /* itemText */ "move scrims to the barndoor frame",
         /* itemImage */ "scrim3_0",
+        /* itemTargets */ [targets.barndoorFrame],
         /* startXY */ { itemL:0, itemT:0, mouseX:0, mouseY:0, diffX:0, diffY:0, dragL:0, dragT:0 },
+        /* minMaxLT */ { minL:0, minT:0, maxL:0, maxT:0 },
         /* dropLoc */ { L:0, T:0, W:0, H:0 },
         /* initLoc */ { L:0, T:0, W:100, H:100 },
-        /* locator */ { L:0, R:100, T:320, B:420 }
+        /* bounds */ {L:studioCanvas.canX, R:studioCanvas.canX + studioCanvas.canW, T:studioCanvas.canY, B:studioCanvas.canY + studioCanvas.canH }
     );
     items.f650_0_2 = new Item(
         /* itemId */ "f650_0_2",
@@ -53,12 +59,14 @@ function initItems() {
         /* itemName */ "scrims_650",
         /* itemType */ "setup",
         /* itemMove */ "none",
-        /* itemText */ "barndoor frame",
+        /* itemText */ "650 Watts",
         /* itemImage */ "f650_0",
+        /* itemTargets */ [targets.barndoorFrame],
         /* startXY */ { itemL:0, itemT:0, mouseX:0, mouseY:0, diffX:0, diffY:0, dragL:0, dragT:0 },
+        /* minMaxLT */ { minL:0, minT:0, maxL:0, maxT:0 },
         /* dropLoc */ { L:0, T:0, W:0, H:0 },
-        /* initLoc */ { L:200, T:80, W:350, H:270 },
-        /* locator */ { L:200, R:650, T:80, B:370 }
+        /* initLoc */ { L:400, T:80, W:350, H:270 },
+        /* bounds */ { L:400, T:80, W:350, H:270 }
     );
     items.distance_0_1 = new Item(
         /* itemId */ "distance_0_1",
@@ -68,15 +76,17 @@ function initItems() {
         /* itemMove */ "slider",
         /* itemText */ "click and drag light icon to change position",
         /* itemImage */ "f650_0",
+        /* itemTargets */ [],
         /* startXY */ { itemL:0, itemT:0, mouseX:0, mouseY:0, diffX:0, diffY:0, dragL:0, dragT:0 },
+        /* minMaxLT */ { minL:0, minT:0, maxL:0, maxT:0 },
         /* dropLoc */ { L:0, T:0, W:0, H:0 },
-        /* initLoc */ { L:560, T:20, W:52, H:40 },
-        /* locator */ { L:260, T:20, W:300, H:100 }
+        /* initLoc */ { L:560, T:20, W:52, H:40 },      // relative
+        /* bounds */ { L:260, T:20, W:300, H:100 }      // relative
     );
     return items;
 }
 
-function Item(itemId, itemEl, itemName, itemType, itemMove, itemText, itemImage, startXY, dropLoc, initLoc, locator) {
+function Item(itemId, itemEl, itemName, itemType, itemMove, itemText, itemImage, itemTargets, startXY, minMaxLT, dropLoc, initLoc, bounds) {
     this.itemId = itemId;
     this.itemEl = itemEl;
     this.itemName = itemName;
@@ -84,8 +94,10 @@ function Item(itemId, itemEl, itemName, itemType, itemMove, itemText, itemImage,
     this.itemMove = itemMove;
     this.itemText = itemText;
     this.itemImage = itemImage;
+    this.itemTargets = itemTargets;
     this.startXY = startXY;
+    this.minMaxLT = minMaxLT;
     this.initLoc = initLoc;
     this.dropLoc = dropLoc;
-    this.locator = locator;
+    this.bounds = bounds;
 }

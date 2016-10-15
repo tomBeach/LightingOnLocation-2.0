@@ -3,7 +3,7 @@
 // ======= ======= ======= PAGE OBJECTS ======= ======= =======
 // ======= ======= ======= PAGE OBJECTS ======= ======= =======
 
-function initPages(Actor_Data) {
+function initPages(items, targets) {
     console.log("initPages");
 
     // pageKey, pageText, SetupItems, GroupItems, MenuItems, ActorItems, TargetItems, studioCanvas, monitorCanvas
@@ -28,7 +28,7 @@ function initPages(Actor_Data) {
         /* SetupItems */ [],
         /* GroupItems */ [],
         /* MenuItems */ [],
-        /* ActorItems */ [Actor_Data.distance_0_1],
+        /* ActorItems */ [items.distance_0_1],
         /* TargetItems */ [],
         /* guides */ [{ itemId:"distance_0_1", L:260, T:20, W:300, H:100 }],
         /* studio */ { text:null, image:"st_int_distance", startFrame:0, endFrame:6, initFrame:0 },
@@ -37,14 +37,14 @@ function initPages(Actor_Data) {
     pages.page_0_2 = new Page (
         /* pageKey */ "0_2",
         /* pageText */ "Often, moving lights is not easy --  especially when its a 20k HMI lighting up a city block.  But if it's too bright you can drop a scrim into the barn door frame and cut it down a bit.  Drag some scrims towards the light and drop them into the barndoor frame.  Easy!",
-        /* SetupItems */ [Actor_Data.f650_0_2],
+        /* SetupItems */ [items.f650_0_2],
         /* GroupItems */ [],
-        /* MenuItems */ [Actor_Data.scrim1_0, Actor_Data.scrim2_0, Actor_Data.scrim3_0],
+        /* MenuItems */ [items.scrim1_0, items.scrim2_0, items.scrim3_0],
         /* ActorItems */ [],
         /* TargetItems */ [],
         /* guides */ [],
-        /* studio */ { text:null, image:null, startFrame:0, endFrame:6, initFrame:0 },
-        /* monitor */ { text:null, image:null, startFrame:0, endFrame:6, initFrame:0 }
+        /* studio */ { text:null, image:"st_int_power", startFrame:0, endFrame:4, initFrame:0 },
+        /* monitor */ { text:null, image:"mn_int_power", startFrame:0, endFrame:4, initFrame:0 }
 	);
 	pages.page_1_0 = new Page (
         /* pageKey */ "1_0",

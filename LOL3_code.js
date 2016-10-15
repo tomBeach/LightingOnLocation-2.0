@@ -215,14 +215,14 @@ var clientApp = {
     makeActorGuides: function() {
         console.log("makeActorGuides");
 
-        var canW = this.activeActor.locator.R - this.activeActor.locator.L;
-        var canH = this.activeActor.locator.B - this.activeActor.locator.T;
+        var canW = this.activeActor.bounds.R - this.activeActor.bounds.L;
+        var canH = this.activeActor.bounds.B - this.activeActor.bounds.T;
 
         // ======= elements =======
         var guidesEl = document.getElementById("guides");
         guidesEl.style.position = "absolute";
-        guidesEl.style.left = this.activeActor.locator.L + 'px';
-        guidesEl.style.top = this.activeActor.locator.T + 30 + 'px';
+        guidesEl.style.left = this.activeActor.bounds.L + 'px';
+        guidesEl.style.top = this.activeActor.bounds.T + 30 + 'px';
         guidesEl.style.width = canW + 'px';
         guidesEl.style.height = canH + 'px';
         guidesEl.style.zIndex = 10;
@@ -384,7 +384,7 @@ var clientApp = {
                 var actor = clientApp.actors[$(e.currentTarget).attr('id')];
                 var dragger = $(e.currentTarget);
                 e.preventDefault();
-                actor.initDrag(e, dragger, actor);
+                actor.initMove(e, dragger, actor);
             });
             $('#' + this.activePage.ActorItems[i].actorId).on('mouseenter', function(e) {
                 // console.log("\nmouseenter");

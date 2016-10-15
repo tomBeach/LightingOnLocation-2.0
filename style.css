@@ -23,6 +23,14 @@ html {
     background: linear-gradient( to top, #777, #ccc);
 }
 
+/* ======= targets ======= */
+.target {
+	background-color: red;
+}
+.target:hover {
+	background-color: green;
+}
+
 /* ======= grid_image ======= */
 .grid_item {
     width: 86px;
@@ -162,6 +170,17 @@ html {
     background: -ms-linear-gradient( to top, #777, #aaa);
     background: -o-linear-gradient( to top, #777, #aaa);
     background: linear-gradient( to top, #777, #aaa);
+}
+#locXYWH {
+	left: 0;
+	top: 0;
+	width: 100px;
+	height: 50px;
+	background-color: white;
+}
+.info-text {
+	margin: 10px 10px;
+	color: purple;
 }
 
 /* ======= menus ======= */

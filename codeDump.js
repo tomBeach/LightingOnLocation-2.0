@@ -1,5 +1,35 @@
 
 
+
+if (items.length > 0) {
+    var gridParams = getGridHW(items);
+}
+
+// ======= getGridHW =======
+function getGridHW(items) {
+    console.log("getGridHW");
+    var totalW = 0;
+    var totalH = 0;
+    var gridParams = { L:0, T:0, W:100, H:100 };
+    for (var i = 0; i < items.length; i++) {
+        totalW += items[i].initLoc.W;
+        totalH += items[i].initLoc.H;
+    }
+    var gridAvgH = totalH/items.length;
+    var gridAvgW = totalW/items.length;
+    var gridRows = 405/gridAvgH;
+    var gridCols = 405/gridAvgW;
+    console.log("totalW:", totalW);
+    console.log("totalH:", totalH);
+    console.log("gridAvgH:", gridAvgH);
+    console.log("gridAvgW:", gridAvgW);
+    console.log("gridRows:", gridRows);
+    console.log("gridCols:", gridCols);
+    return gridParams;
+}
+
+
+
 // ======= getNextPage =======
 function getNextPage(prevOrNext) {
     console.log("getNextPage");
