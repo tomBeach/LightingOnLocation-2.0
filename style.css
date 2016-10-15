@@ -326,5 +326,5 @@ canvas {
 
 /* ======= targets ======= */
 .setupTarget {
-	background-color: red;
+	border: solid 5px red;
 }

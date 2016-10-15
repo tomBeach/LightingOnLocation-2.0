@@ -16,7 +16,7 @@ function initTargets() {
         /* itemType */ "setupTarget",
         /* itemText */ null,
         /* itemImage */ "null",
-        /* initLoc */ { L:100, T:20, W:60, H:200 },
+        /* initLoc */ { L:110, T:10, W:80, H:200 },
         /* absLoc */ { L:0, T:0, W:0, H:0 },
         /* occupier */ null
     );

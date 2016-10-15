@@ -210,8 +210,11 @@ var clientApp = {
             console.log("makeItemEls");
             console.log("items:", items);
             var item, itemType, urlString, newDiv, target;
-            var locL = clientApp.displayItems.studio.canX + 10;
-            var locT = clientApp.displayItems.studio.canY + 10;
+            var gridW;
+            var gridL = clientApp.displayItems.studio.canX + 10;
+            var gridT = clientApp.displayItems.studio.canY + 10;
+            $('#grid').css('left', gridL + 'px');
+            $('#grid').css('top', gridT + 'px');
 
             for (var i = 0; i < items.length; i++) {
                 item = items[i];
@@ -222,9 +225,8 @@ var clientApp = {
                     case "grid":
                         newDiv = makeItemHtml(item);
                         item.itemEl = newDiv;
-                        $('#grid').css('left', locL + 'px');
-                        $('#grid').css('top', locT + 'px');
-                        locateGridItem(item, newDiv);
+                        gridW = clientApp.displayItems.studio.canX + item.initLoc.W + 10;
+                        locateGridItem(item, newDiv, gridW, i);
                         break;
                     case "actor":
                         newDiv = makeItemHtml(item);
@@ -266,23 +268,31 @@ var clientApp = {
             }
 
             // ======= locateGridItem =======
-            function locateGridItem(item, newDiv) {
+            function locateGridItem(item, newDiv, gridW, itemIndex) {
                 console.log("locateGridItem");
 
-                newDiv.style.left = locL + 'px';
-                newDiv.style.top = locT + 'px';
+                // == check vertical space for new item; move to right if not
+                if ((gridT + item.initLoc.H + 10) > (clientApp.displayItems.studio.canY + clientApp.displayItems.studio.canH)) {
+                    gridT = clientApp.displayItems.studio.canY + 10;
+                    gridL = gridW;
+                    gridW = gridL + item.initLoc.W + 10;
+                }
+
+                // == locate item on new grid values
+                newDiv.style.left = gridL + 'px';
+                newDiv.style.top = gridT + 'px';
                 newDiv.style.width = item.initLoc.W + 'px';
                 newDiv.style.height = item.initLoc.H + 'px';
                 newDiv.style.zIndex = 4;
+                item.initLoc.L = gridL;
+                item.initLoc.T = gridT;
+                console.log("gridL:", gridL);
+                console.log("gridT:", gridT);
+
+                // == set next item top location (based on prev item height)
+                gridT = gridT + item.initLoc.H + 10;
+
                 $('#grid').append(newDiv);
-                if (locT < (locT + items[i].initLoc.H + 10)) {
-                    locT = locT + items[i].initLoc.H + 10;
-                } else {
-                    locT = clientApp.displayItems.studio.canY + 10;
-                    locL = clientApp.displayItems.studio.canX + items[i].initLoc.W + 10;
-                }
-                console.log("locL:", locL);
-                console.log("locT:", locT);
             }
 
             // ======= locateNewActor =======
@@ -588,9 +598,8 @@ var clientApp = {
             for (var i = 0; i < items.length; i++) {
                 $('#' + items[i].itemId).on('mousedown', function(e) {
                     console.log("\nmousedown");
-                    console.log("clientApp.items:", clientApp.items);
                     var actor = clientApp.items[$(e.currentTarget).attr('id')];
-                    console.log("actor:", actor);
+                    // console.log("actor:", actor);
                     var actorEl = $(e.currentTarget);
                     e.preventDefault();
                     clientApp.activeActor = actor;

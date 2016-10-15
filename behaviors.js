@@ -135,6 +135,24 @@ Item.prototype.moveItem = function(e) {
         $('#locXYWH').html("<p class='info-text'>left: " + left + "</p><p class='info-text'>top: " + top + "</p>");
     }
 
+    // ======= swapTargetOccupiers =======
+    function swapTargetOccupiers(target, newOccupier) {
+        console.log("swapTargetOccupiers");
+        console.log("newOccupier.itemId:", newOccupier.itemId);
+        console.log("newOccupier.initLoc:", newOccupier.initLoc);
+
+        // == return target occupier to original location
+        var occupier = target.occupier;
+        if (occupier) {
+            console.log("occupier.initLoc.L:", occupier.initLoc.L);
+            console.log("occupier.initLoc.T:", occupier.initLoc.T);
+            $(occupier.itemEl).css('left', occupier.initLoc.L);
+            $(occupier.itemEl).css('top', occupier.initLoc.T);
+            $(occupier.itemEl).css('display', 'block');
+        }
+        target.occupier = newOccupier;
+    }
+
     // ======= checkItemTargets =======
     function checkItemTargets(left, top) {
         // console.log("checkItemTargets");
@@ -150,13 +168,13 @@ Item.prototype.moveItem = function(e) {
         clientApp.updateCanvas(left, top, 0);
 
         // == collision detector for target
+        var target;
         var overlap = 10;
+        var draggerL = left + item.initLoc.W/2;
+        var draggerT = top + item.initLoc.H/2;
 
         for (var i = 0; i < item.itemTargets.length; i++) {
-            var targetL = item.itemTargets[i].absLoc.L;
-            var targetR = item.itemTargets[i].absLoc.W;
-            var targetT = item.itemTargets[i].absLoc.T;
-            var targetB = item.itemTargets[i].absLoc.H;
+            target = item.itemTargets[i];
 
             // == set real-time item loc and canvas frame based on slider position
             $(item.itemEl).css('top', top + 'px');
@@ -164,14 +182,18 @@ Item.prototype.moveItem = function(e) {
             item.startXY.dragL = left;
             item.startXY.dragT = top;
 
-            if ((left < targetR) && (top > targetT) && (left > targetL) && (top < targetB)) {
+            if ((draggerL < target.absLoc.W) && (draggerT > target.absLoc.T) && (draggerL > target.absLoc.L) && (draggerT < target.absLoc.H)) {
                 console.log("-- HIT -- HIT -- HIT --");
+                $(clientApp.activeActor.itemEl).off();
+                $(clientApp.activeActor.itemEl).css('z-index', '2');
+                $(clientApp.activeActor.itemEl).css('display', 'none');
+                window.removeEventListener('mousemove', item.moveItem, true);
+                swapTargetOccupiers(target, item);
             }
         }
         clientApp.updateCanvas(left, top, 0);
         $('#locXYWH').html("<p class='info-text'>left: " + left + "</p><p class='info-text'>top: " + top + "</p>");
     }
-
 }
 
 // ======= mouseUp =======
