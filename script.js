@@ -220,27 +220,31 @@ var clientApp = {
 
                 switch(itemType) {
                     case "grid":
-                    newDiv = makeItemHtml(item);
-                    $('#grid').css('left', locL + 'px');
-                    $('#grid').css('top', locT + 'px');
-                    locateGridItem(item, newDiv);
-                    break;
+                        newDiv = makeItemHtml(item);
+                        item.itemEl = newDiv;
+                        $('#grid').css('left', locL + 'px');
+                        $('#grid').css('top', locT + 'px');
+                        locateGridItem(item, newDiv);
+                        break;
                     case "actor":
-                    newDiv = makeItemHtml(item);
-                    locateNewActor(item, newDiv);
-                    break;
+                        newDiv = makeItemHtml(item);
+                        item.itemEl = newDiv;
+                        locateNewActor(item, newDiv);
+                        break;
                     case "setup":
-                    newDiv = makeItemHtml(item);
-                    locateNewSetup(item, newDiv);
-                    if (item.itemTargets.length > 0) {
-                        for (var j = 0; j < item.itemTargets.length; j++) {
-                            target = item.itemTargets[j];
-                            console.log("target:", target);
-                            newDiv = makeTargetHtml(target);
-                            locateSetupTarget(target, item, newDiv);
+                        newDiv = makeItemHtml(item);
+                        item.itemEl = newDiv;
+                        locateNewSetup(item, newDiv);
+                        if (item.itemTargets.length > 0) {
+                            for (var j = 0; j < item.itemTargets.length; j++) {
+                                target = item.itemTargets[j];
+                                console.log("target:", target);
+                                newDiv = makeTargetHtml(target);
+                                item.itemEl = newDiv;
+                                locateSetupTarget(target, item, newDiv);
+                            }
                         }
-                    }
-                    break;
+                        break;
                 }
             }
 
@@ -249,11 +253,15 @@ var clientApp = {
                 console.log("locateSetupTarget");
                 console.log("target:", target);
                 console.log("item:", item);
+                console.log("item.itemEl:", item.itemEl);
                 console.log("newDiv:", newDiv);
+
+                // == setupTarget initLoc is offset from setup item
                 newDiv.style.left = item.initLoc.L + displayItems.studio.canX + target.initLoc.L + 'px';
                 newDiv.style.top = item.initLoc.T + displayItems.studio.canY + target.initLoc.T + 'px';
                 newDiv.style.width = target.initLoc.W + 'px';
                 newDiv.style.height = target.initLoc.H + 'px';
+                newDiv.style.zIndex = 3;
                 $('body').append(newDiv);
             }
 
@@ -288,17 +296,6 @@ var clientApp = {
                 $('#actors').append(newDiv);
             }
 
-            // ======= makeTargetHtml =======
-            function makeTargetHtml(item) {
-                console.log("makeTargetHtml");
-                newDiv = document.createElement('div');
-                newDiv.id = item.itemId;
-                newDiv.classList.add(item.itemType);
-                newDiv.style.position = "absolute";
-                newDiv.style.zIndex = 3;
-                return newDiv;
-            }
-
             // ======= locateNewSetup =======
             function locateNewSetup(item, newDiv) {
                 console.log("locateNewSetup");
@@ -308,6 +305,16 @@ var clientApp = {
                 newDiv.style.height = item.initLoc.H + 'px';
                 newDiv.style.zIndex = 2;
                 $('#setup').append(newDiv);
+            }
+
+            // ======= makeTargetHtml =======
+            function makeTargetHtml(item) {
+                console.log("makeTargetHtml");
+                newDiv = document.createElement('div');
+                newDiv.id = item.itemId;
+                newDiv.classList.add(item.itemType);
+                newDiv.style.position = "absolute";
+                return newDiv;
             }
 
             // ======= makeItemHtml =======

@@ -323,3 +323,8 @@ canvas {
     width: 384px;
     height: 216px;
 }
+
+/* ======= targets ======= */
+.setupTarget {
+	background-color: red;
+}

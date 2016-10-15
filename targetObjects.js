@@ -16,14 +16,14 @@ function initTargets() {
         /* itemType */ "setupTarget",
         /* itemText */ null,
         /* itemImage */ "null",
-        /* initLoc */ { L:50, T:50, W:50, H:140 },
-        /* bounds */ { L:0, T:0, W:0, H:0 },
+        /* initLoc */ { L:100, T:20, W:60, H:200 },
+        /* absLoc */ { L:0, T:0, W:0, H:0 },
         /* occupier */ null
     );
     return targets;
 }
 
-function Target(itemId, itemEl, itemName, itemType, itemText, itemImage, initLoc, bounds, occupier) {
+function Target(itemId, itemEl, itemName, itemType, itemText, itemImage, initLoc, absLoc, occupier) {
     this.itemId = itemId;
     this.itemEl = itemEl;
     this.itemName = itemName;
@@ -31,6 +31,6 @@ function Target(itemId, itemEl, itemName, itemType, itemText, itemImage, initLoc
     this.itemText = itemText;
     this.itemImage = itemImage;
     this.initLoc = initLoc;
-    this.bounds = bounds;
+    this.absLoc = absLoc;
     this.occupier = occupier;
 }
