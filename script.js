@@ -7,9 +7,10 @@
 // var Group_Data = {};
 // var Menu_Data = {};
 // var Target_Data = {};
+
 var displayItems = {
-    monitor: { itemName: "monitor", itemText: "Monitor", canvasName: "studioCanvas", can:null, ctx:null, canX:740, canY:10, canW:384, canH:216 },
-    studio: { itemName: "studio", itemText: "Studio View", canvaNames: "monitorCanvas", can:null, ctx:null, canX:10, canY:280, canW:720, canH:405 },
+    monitor: { itemName: "monitor", itemText: "Monitor", canvasName: "monitorCanvas", can:null, ctx:null, canX:740, canY:10, canW:384, canH:216 },
+    studio: { itemName: "studio", itemText: "Studio View", canvaNames: "studioCanvas", can:null, ctx:null, canX:10, canY:280, canW:720, canH:405 },
     shop: { itemName: "shop", itemText: "Shop Menu" },
     lessons: { itemName: "lessons", itemText: "Lesson Menu" },
     activeLesson: null
@@ -92,8 +93,8 @@ var clientApp = {
                 // == store can/ctx on app object
                 this.displayItems[canvases[i]].can = can;
                 this.displayItems[canvases[i]].ctx = ctx;
-                this.displayItems[canvases[i]].canW = canW;
-                this.displayItems[canvases[i]].canH = canH;
+                // this.displayItems[canvases[i]].canW = canW;
+                // this.displayItems[canvases[i]].canH = canH;
             }
 
             // ======= backingScale =======
@@ -170,7 +171,9 @@ var clientApp = {
                         var initImage = clientApp.monitorImages[initFrame];
                     }
                     ctx.clearRect(0, 0, 720, 405);
-                    ctx.drawImage(initImage, 0, 0, 720, 405, 0, 0, 280, 140);
+
+                    // == context.drawImage(img, sx, sy, swidth, sheight, x, y, width, height);
+                    ctx.drawImage(initImage, 0, 0, 720, 405, 0, 0, 300, 150);
                     ctx.save();
                 }
             }
@@ -352,8 +355,8 @@ var clientApp = {
                 // == make svg guide elements
                 var guidesEl = document.getElementById("guides");
                 guidesEl.style.position = "absolute";
-                guidesEl.style.left = (item.bounds.L + displayItems.studio.canX) + 'px';
-                guidesEl.style.top = (item.bounds.T + displayItems.studio.canY + 30) + 'px';
+                guidesEl.style.left = (item.bounds.L + displayItems.studio.canX + 5) + 'px';
+                guidesEl.style.top = (item.bounds.T + displayItems.studio.canY + 25) + 'px';
                 guidesEl.style.width = item.bounds.W + 'px';
                 guidesEl.style.height = item.bounds.H + 'px';
                 guidesEl.style.zIndex = 1;
@@ -580,6 +583,7 @@ var clientApp = {
                     console.log("\nmousedown");
                     console.log("clientApp.items:", clientApp.items);
                     var actor = clientApp.items[$(e.currentTarget).attr('id')];
+                    console.log("actor:", actor);
                     var actorEl = $(e.currentTarget);
                     e.preventDefault();
                     clientApp.activeActor = actor;
@@ -757,14 +761,16 @@ var clientApp = {
         var studioCan = document.getElementById("studioCanvas");
         var studioCtx = studioCan.getContext("2d");
         studioCtx.clearRect(0, 0, 720, 405);
-        studioCtx.drawImage(studioImage, 0, 0, 720, 405, 0, 0, 280, 140);
+        // studioCtx.drawImage(studioImage, 0, 0, 720, 405, 0, 0, 280, 140);
+        studioCtx.drawImage(studioImage, 0, 0, 720, 405, 0, 0, 300, 150);
 
         var monitorImage = clientApp.monitorImages[frameIndex];
         var monitorString = ('images/' + monitorImage + '_' + frameIndex + '.png');
         var monitorCan = document.getElementById("monitorCanvas");
         var monitorCtx = monitorCan.getContext("2d");
         monitorCtx.clearRect(0, 0, 384, 180);
-        monitorCtx.drawImage(monitorImage, 0, 0, 720, 405, 0, 0, 280, 140);
+        // monitorCtx.drawImage(monitorImage, 0, 0, 720, 405, 0, 0, 280, 140);
+        monitorCtx.drawImage(monitorImage, 0, 0, 720, 405, 0, 0, 300, 150);
     },
 
     // ======= clearLessonCanvases =======

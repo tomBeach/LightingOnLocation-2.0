@@ -1,4 +1,7 @@
 
+if (left > (displayItems.studio.canX + displayItems.studio.canW)) {
+    left = item.minMaxLT.maxL - item.initLoc.W;
+}
 
 
 if (items.length > 0) {

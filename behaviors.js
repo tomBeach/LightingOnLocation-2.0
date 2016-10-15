@@ -18,6 +18,26 @@ Item.prototype.initMove = function(e) {
     console.log("item.itemTargets:", item.itemTargets);
     $('#locXYWH').html("<p class='info-text'>left: " + locL + "</p><p class='info-text'>top: " + locT + "</p>");
 
+    // == limit moves to max canvas boundaries
+    console.log("item.bounds.W:", item.bounds.W);
+    console.log("item.bounds.H:", item.bounds.H);
+    console.log("item.initLoc.W:", item.initLoc.W);
+    console.log("item.initLoc.H:", item.initLoc.H);
+    console.log("displayItems.studio.canW:", displayItems.studio.canW);
+    console.log("displayItems.studio.canH:", displayItems.studio.canH);
+    if (item.bounds.W > (displayItems.studio.canW - item.initLoc.W)) {
+        var itemBoundsW = displayItems.studio.canW - item.initLoc.W;
+    } else {
+        var itemBoundsW = item.bounds.W;
+    }
+    if (item.bounds.H > (displayItems.studio.canH - item.initLoc.H)) {
+        var itemBoundsH = displayItems.studio.canH - item.initLoc.H;
+    } else {
+        var itemBoundsH = item.bounds.H;
+    }
+    console.log("itemBoundsW:", itemBoundsW);
+    console.log("itemBoundsH:", itemBoundsH);
+
     // == set item/mouse locations and bounds (absolute position)
     item.startXY.itemL = locL;
     item.startXY.itemT = locT;
@@ -25,10 +45,10 @@ Item.prototype.initMove = function(e) {
     item.startXY.mouseY = e.clientY;
     item.startXY.diffX = e.clientX - locL;
     item.startXY.diffY = e.clientY - locT;
-    item.minMaxLT.minL = item.bounds.L + displayItems.studio.canX;
-    item.minMaxLT.minT = item.bounds.T + displayItems.studio.canY;
-    item.minMaxLT.maxL = item.bounds.L + displayItems.studio.canX + item.bounds.W;  // item.initLoc.W/2;
-    item.minMaxLT.maxT = item.bounds.T + displayItems.studio.canY + item.bounds.H;  // item.initLoc.H/2;
+    item.minMaxLT.minL = displayItems.studio.canX + item.bounds.L;      // absolute
+    item.minMaxLT.minT = displayItems.studio.canY + item.bounds.T;      // absolute
+    item.minMaxLT.maxL = displayItems.studio.canX + item.bounds.L + itemBoundsW;      //  - item.initLoc.W;
+    item.minMaxLT.maxT = displayItems.studio.canY + item.bounds.T + itemBoundsH;      //  - item.initLoc.H;
     console.log("item.minMaxLT", item.minMaxLT);
 
     window.addEventListener('mousemove', item.moveItem, true);
@@ -75,7 +95,7 @@ Item.prototype.moveItem = function(e) {
             break;
         case "dragger":
             var left = parseInt(item.startXY.itemL + dX);
-            var top = parseInt(item.startXY.itemT - item.dropLoc.T + dY);
+            var top = parseInt(item.startXY.itemT + dY);
             var itemLT = getMoveBoundaries(left, top);
             if (item.itemTargets.length > 0) {
                 checkItemTargets(itemLT[0], itemLT[1]);
@@ -113,27 +133,36 @@ Item.prototype.moveItem = function(e) {
     function checkItemTargets(left, top) {
         console.log("checkItemTargets");
 
-        var overlap = 10;
-        var item = clientApp.activeActor;
-        $(item.itemEl).css('z-index', '10');
-        console.log("left/top:", left, top);
         $('#locXYWH').html("<p class='info-text'>left: " + left + "</p><p class='info-text'>top: " + top + "</p>");
 
-        for (var i = 0; i < item.itemTargets.length; i++) {
-            var boundsT = item.itemTargets[i].initLoc;
-            console.log("boundsT:", boundsT);
-
-            // == set real-time item loc and canvas frame based on slider position
-            $(item.itemEl).css('top', top + 'px');
-            $(item.itemEl).css('left', left + 'px');
-            item.startXY.dragL = left;
-            item.startXY.dragT = top;
-
-            if (left<(boundsT.L+boundsT.W-overlap) && top>(boundsT.T+overlap) && left>(boundsT.L+overlap) && top<(boundsT.T+boundsT.H-overlap)) {
-                console.log("-- HIT -- HIT -- HIT --");
-            }
-        }
+        // == set real-time item loc and canvas frame based on slider position
+        $(clientApp.activeActor.itemEl).css('z-index', '10');
+        $(clientApp.activeActor.itemEl).css('top', top + 'px');
+        $(clientApp.activeActor.itemEl).css('left', left + 'px');
+        item.startXY.dragL = left;
+        item.startXY.dragT = top;
         clientApp.updateCanvas(left, top, 0);
+
+        // var overlap = 10;
+        // var item = clientApp.activeActor;
+        // $(item.itemEl).css('z-index', '10');
+        // console.log("left/top:", left, top);
+        //
+        // for (var i = 0; i < item.itemTargets.length; i++) {
+        //     var boundsT = item.itemTargets[i].initLoc;
+        //     console.log("boundsT:", boundsT);
+        //
+        //     // == set real-time item loc and canvas frame based on slider position
+        //     $(item.itemEl).css('top', top + 'px');
+        //     $(item.itemEl).css('left', left + 'px');
+        //     item.startXY.dragL = left;
+        //     item.startXY.dragT = top;
+        //
+        //     if (left<(boundsT.L+boundsT.W-overlap) && top>(boundsT.T+overlap) && left>(boundsT.L+overlap) && top<(boundsT.T+boundsT.H-overlap)) {
+        //         console.log("-- HIT -- HIT -- HIT --");
+        //     }
+        // }
+        // clientApp.updateCanvas(left, top, 0);
     }
 
 }

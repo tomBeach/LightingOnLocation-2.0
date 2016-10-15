@@ -7,6 +7,7 @@ function initItems(targets) {
     console.log("initItems");
 
     var items = {};
+    var canvasS = clientApp.displayItems.studio;
 
     items.scrim1_0 = new Item(
         /* itemId */ "scrim1_0",
@@ -21,7 +22,7 @@ function initItems(targets) {
         /* minMaxLT */ { minL:0, minT:0, maxL:0, maxT:0 },
         /* dropLoc */ { L:0, T:0, W:0, H:0 },
         /* initLoc */ { L:0, T:0, W:100, H:100 },
-        /* bounds */ { L:studioCanvas.canX, R:studioCanvas.canX + studioCanvas.canW, T:studioCanvas.canY, B:studioCanvas.canY + studioCanvas.canH }
+        /* bounds */ { L:0, T:0, W:canvasS.canW, H:canvasS.canH }      // relative
     );
     items.scrim2_0 = new Item(
         /* itemId */ "scrim2_0",
@@ -36,7 +37,7 @@ function initItems(targets) {
         /* minMaxLT */ { minL:0, minT:0, maxL:0, maxT:0 },
         /* dropLoc */ { L:0, T:0, W:0, H:0 },
         /* initLoc */ { L:0, T:0, W:100, H:100 },
-        /* bounds */ { L:studioCanvas.canX, R:studioCanvas.canX + studioCanvas.canW, T:studioCanvas.canY, B:studioCanvas.canY + studioCanvas.canH }
+        /* bounds */ { L:0, T:0, W:canvasS.canW, H:canvasS.canH }      // relative
     );
     items.scrim3_0 = new Item(
         /* itemId */ "scrim3_0",
@@ -51,7 +52,7 @@ function initItems(targets) {
         /* minMaxLT */ { minL:0, minT:0, maxL:0, maxT:0 },
         /* dropLoc */ { L:0, T:0, W:0, H:0 },
         /* initLoc */ { L:0, T:0, W:100, H:100 },
-        /* bounds */ {L:studioCanvas.canX, R:studioCanvas.canX + studioCanvas.canW, T:studioCanvas.canY, B:studioCanvas.canY + studioCanvas.canH }
+        /* bounds */ { L:0, T:0, W:canvasS.canW, H:canvasS.canH }      // relative
     );
     items.f650_0_2 = new Item(
         /* itemId */ "f650_0_2",
@@ -80,8 +81,8 @@ function initItems(targets) {
         /* startXY */ { itemL:0, itemT:0, mouseX:0, mouseY:0, diffX:0, diffY:0, dragL:0, dragT:0 },
         /* minMaxLT */ { minL:0, minT:0, maxL:0, maxT:0 },
         /* dropLoc */ { L:0, T:0, W:0, H:0 },
-        /* initLoc */ { L:560, T:20, W:52, H:40 },      // relative
-        /* bounds */ { L:260, T:20, W:300, H:100 }      // relative
+        /* initLoc */ { L:600, T:30, W:52, H:40 },      // relative
+        /* bounds */ { L:290, T:20, W:340, H:110 }      // relative
     );
     return items;
 }
