@@ -21,7 +21,7 @@ var defaultPage = {
     pageText: null,
     SetupItems: null,
     GroupItems: null,
-    MenuItems: null,
+    GridItems: null,
     ActorItems: null,
     TargetItems: null,
     studioCanvas: null,

@@ -131,7 +131,7 @@ Item.prototype.moveItem = function(e) {
         $(item.itemEl).css('left', left + 'px');
         item.startXY.dragL = left;
         item.startXY.dragT = top;
-        clientApp.updateCanvas(left, top, indexX);
+        clientApp.updateCanvasFrame(left, top, indexX);
         $('#locXYWH').html("<p class='info-text'>left: " + left + "</p><p class='info-text'>top: " + top + "</p>");
     }
 
@@ -165,7 +165,6 @@ Item.prototype.moveItem = function(e) {
         $(item.itemEl).css('left', left + 'px');
         item.startXY.dragL = left;
         item.startXY.dragT = top;
-        clientApp.updateCanvas(left, top, 0);
 
         // == collision detector for target
         var target;
@@ -188,10 +187,11 @@ Item.prototype.moveItem = function(e) {
                 $(clientApp.activeActor.itemEl).css('z-index', '2');
                 $(clientApp.activeActor.itemEl).css('display', 'none');
                 window.removeEventListener('mousemove', item.moveItem, true);
+                clientApp.updateCanvasFrame(left, top, item.indexedFrame);
                 swapTargetOccupiers(target, item);
+                toggleHoverText(target, "target");
             }
         }
-        clientApp.updateCanvas(left, top, 0);
         $('#locXYWH').html("<p class='info-text'>left: " + left + "</p><p class='info-text'>top: " + top + "</p>");
     }
 }

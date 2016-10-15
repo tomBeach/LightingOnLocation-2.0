@@ -328,3 +328,6 @@ canvas {
 .setupTarget {
 	border: solid 5px red;
 }
+.setupTarget:hover {
+	border: solid 5px green;
+}

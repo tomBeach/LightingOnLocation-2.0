@@ -113,6 +113,9 @@ var clientApp = {
     makeLessonCanvases: function(lesson) {
         console.log("makeLessonCanvases");
 
+        clientApp.studioImages = [];
+        clientApp.monitorImages = [];
+
         if (this.activePage.studio.image) {
             loadCanvasImages("studio");
             loadCanvasImages("monitor");
@@ -139,11 +142,12 @@ var clientApp = {
             var canW = clientApp.displayItems[canvas].canW;
             var canH = clientApp.displayItems[canvas].canH;
             var ctx = clientApp.displayItems[canvas].ctx;
+            loadNextImage(null, 0);
 
             // ======= loadNextImage =======
-            loadNextImage(null, 0);
             function loadNextImage(image, imageIndex) {
                 console.log("loadNextImage");
+                console.log("image:", image);
 
                 // == make image elements; assure image loading via timeout
                 var imageString = "images/" + imageFilesArray[imageIndex];
@@ -184,17 +188,18 @@ var clientApp = {
     makeLessonItems: function() {
         console.log("makeLessonItems");
 
-        var setups = this.activePage.SetupItems;
-        var groups = this.activePage.GroupItems;
-        var items = this.activePage.MenuItems;
-        var actors = this.activePage.ActorItems;
-        var targets = this.activePage.TargetItems;
-        var guides = this.activePage.guides;
+        var page = this.activePage;
+        var setups = page.SetupItems;
+        var groups = page.GroupItems;
+        var gridders = page.GridItems;
+        var actors = page.ActorItems;
+        var targets = page.TargetItems;
+        var guides = page.guides;
         console.log("setups:", setups);
         console.log("actors:", actors);
-        console.log("items:", items);
+        console.log("gridders:", gridders);
 
-        var lessonItemsArray = [setups, groups, items, actors, targets];
+        var lessonItemsArray = [setups, groups, gridders, actors, targets];
 
         for (var i = 0; i < lessonItemsArray.length; i++) {
             if ((lessonItemsArray[i]) && (lessonItemsArray[i].length > 0)) {
@@ -572,17 +577,20 @@ var clientApp = {
     activateLessonItems: function() {
         console.log("activateLessonItems");
 
-        var setups = this.activePage.SetupItems;
-        var groups = this.activePage.GroupItems;
-        var items = this.activePage.MenuItems;
-        var actors = this.activePage.ActorItems;
-        var targets = this.activePage.TargetItems;
-        var guides = this.activePage.guides;
+        var page = this.activePage;
+        var setups = page.SetupItems;
+        var groups = page.GroupItems;
+        var gridders = page.GridItems;
+        var actors = page.ActorItems;
+        var targets = page.TargetItems;
+        var guides = page.guides;
+        var setupItem, setupTargets, setupControls;
         console.log("setups:", setups);
         console.log("actors:", actors);
-        console.log("items:", items);
-        var lessonItemsArray = [setups, groups, items, actors, targets];
+        console.log("gridders:", gridders);
+        var lessonItemsArray = [groups, gridders, actors, targets];
 
+        // == activate page level items
         for (var i = 0; i < lessonItemsArray.length; i++) {
             for (var i = 0; i < lessonItemsArray.length; i++) {
                 if ((lessonItemsArray[i]) && (lessonItemsArray[i].length > 0)) {
@@ -591,12 +599,31 @@ var clientApp = {
             }
         }
 
+        // == activate setup level items
+        for (var i = 0; i < setups.length; i++) {
+            setupItem = setups[i];
+            if (setupItem.itemTargets.length > 0) {
+                activatePageItems(setupItem.itemTargets);
+            }
+            if (setupItem.itemControls.length > 0) {
+                activatePageItems(setupItem.itemControls);
+            }
+        }
+
+        // == match grid items (gridders) to frame indexes
+        for (var i = 0; i < gridders.length; i++) {
+            gridders[i].indexedFrame = page.studio.indexedFrames[i];
+            console.log("gridders[i]:", gridders[i]);
+        }
+
         // ======= activatePageItems =======
         function activatePageItems(items) {
             console.log("activatePageItems");
 
             for (var i = 0; i < items.length; i++) {
-                $('#' + items[i].itemId).on('mousedown', function(e) {
+                var item = items[i];
+                console.log("item.itemId:", item.itemId);
+                $('#' + item.itemId).on('mousedown', function(e) {
                     console.log("\nmousedown");
                     var actor = clientApp.items[$(e.currentTarget).attr('id')];
                     // console.log("actor:", actor);
@@ -605,11 +632,11 @@ var clientApp = {
                     clientApp.activeActor = actor;
                     actor.initMove(e, actorEl, actor);
                 });
-                $('#' + items[i].itemId).on('mouseenter', function(e) {
-                    // console.log("\nmouseenter");
-                    clientApp.toggleHoverText(e.currentTarget, "actor");
+                $('#' + item.itemId).on('mouseenter', function(e) {
+                    console.log("\nmouseenter");
+                    clientApp.toggleHoverText(e.currentTarget, item.itemType);
                 });
-                $('#' + items[i].itemId).on('mouseleave', function(e) {
+                $('#' + item.itemId).on('mouseleave', function(e) {
                     // console.log("\nmouseleave");
                     clientApp.toggleHoverText(null, null);
                 });
@@ -767,9 +794,9 @@ var clientApp = {
     // ======= ======= ======= UTILITIES ======= ======= =======
     // ======= ======= ======= UTILITIES ======= ======= =======
 
-    // ======= updateCanvas =======
-    updateCanvas: function(left, top, frameIndex) {
-        // console.log("updateCanvas");
+    // ======= updateCanvasFrame =======
+    updateCanvasFrame: function(left, top, frameIndex) {
+        // console.log("updateCanvasFrame");
 
         // == canvas parameters
         var studioImage = clientApp.studioImages[frameIndex];
@@ -822,13 +849,14 @@ var clientApp = {
 
     // ======= toggleHoverText =======
     toggleHoverText: function(item, itemType) {
-        // console.log("toggleHoverText');
+        console.log("toggleHoverText");
+        console.log("itemType:", itemType);
         if ($(item).attr('id')) {
             if (itemType == "display") {
                 var itemText = clientApp.displayItems[$(item).attr('id')].itemText;
             } else if (itemType == "lesson") {
                 var itemText = clientApp.lessons[$(item).attr('id')].itemText;
-            } else if (itemType == "actor") {
+            } else if ((itemType == "actor") || (itemType == "target")) {
                 var itemText = clientApp.items[$(item).attr('id')].itemText;
             } else {
                 var itemText = $(item).attr('id');
